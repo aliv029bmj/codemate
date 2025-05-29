@@ -32,7 +32,7 @@ Note: You might need to make the script executable with `chmod +x install.sh` be
 If you prefer a single command that handles everything:
 
 ```
-curl -sSL https://raw.githubusercontent.com/aliv029bmj/code566/main/install-one-command.sh | bash
+curl -sSL https://raw.githubusercontent.com/aliv029bmj/codemate/main/install-one-command.sh | bash
 ```
 
 ## Installation from VS Code Marketplace
@@ -51,4 +51,4 @@ If you encounter any issues during installation:
 2. Right-click on Code566 in the Extensions panel and select "Extension Settings"
 3. Check the "Code566" channel in the Output panel for activation errors
 
-For help or more information, refer to the GitHub repository: https://github.com/aliv029bmj/code566 
+For help or more information, refer to the GitHub repository: https://github.com/aliv029bmj/codemate 
