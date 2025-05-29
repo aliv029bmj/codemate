@@ -1,62 +1,62 @@
 @echo off
-echo 🚀 CodeMate Kurulum Başlıyor...
+echo 🚀 Starting CodeMate Installation...
 
-:: npm var mı kontrol et
+:: Check if npm exists
 where npm >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-  echo ❌ npm bulunamadı. Lütfen Node.js kurun.
+  echo ❌ npm not found. Please install Node.js.
   exit /b 1
 )
 
-:: VS Code CLI var mı kontrol et
+:: Check if VS Code CLI exists
 where code >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-  echo ⚠️ VS Code CLI bulunamadı. Paket otomatik yüklenemeyecek.
+  echo ⚠️ VS Code CLI not found. Automatic package installation will not be available.
 )
 
-:: Bağımlılıkları kur
-echo 📦 Bağımlılıklar kuruluyor...
+:: Install dependencies
+echo 📦 Installing dependencies...
 call npm install
 
-:: Derle
-echo 🔨 Kod derleniyor...
+:: Compile
+echo 🔨 Compiling code...
 call npm run compile
 
-:: vsce var mı kontrol et
+:: Check if vsce exists
 where vsce >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-  echo 📥 vsce kurulmamış, yükleniyor...
+  echo 📥 vsce not installed, installing now...
   call npm install -g @vscode/vsce
 )
 
-:: VSIX paketini oluştur
-echo 📦 VSIX paketi oluşturuluyor...
+:: Create VSIX package
+echo 📦 Creating VSIX package...
 call vsce package
 
-:: En son VSIX dosyasını bul
+:: Find the latest VSIX file
 for /f "tokens=*" %%a in ('dir /b codemate-*.vsix 2^>nul') do (
   set VSIX_FILE=%%a
 )
 
-:: VS Code CLI mevcutsa paketi kur
+:: Install package if VS Code CLI is available
 where code >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
   if defined VSIX_FILE (
-    echo 🔌 Eklenti VS Code'a yükleniyor: %VSIX_FILE%
+    echo 🔌 Installing extension to VS Code: %VSIX_FILE%
     call code --install-extension "%VSIX_FILE%"
-    echo ✅ Kurulum tamamlandı! VS Code'u yeniden başlatın ve komut paletinde 'CodeMate: Select Mode' yazarak başlayın.
+    echo ✅ Installation complete! Restart VS Code and type 'CodeMate: Select Mode' in the command palette to start.
   ) else (
-    echo ❌ VSIX dosyası bulunamadı.
+    echo ❌ VSIX file not found.
   )
 ) else (
   if defined VSIX_FILE (
-    echo ⚠️ VS Code CLI bulunamadı. Lütfen bu VSIX paketini manuel olarak yükleyin: %VSIX_FILE%
-    echo 📝 Kurulum için VS Code'da Extensions panelinde (...) menüsünden 'Install from VSIX...' seçeneğini kullanın.
+    echo ⚠️ VS Code CLI not found. Please install this VSIX package manually: %VSIX_FILE%
+    echo 📝 To install, use the 'Install from VSIX...' option in the Extensions panel (...) menu in VS Code.
   ) else (
-    echo ❌ VSIX dosyası bulunamadı.
+    echo ❌ VSIX file not found.
   )
 )
 
 echo.
-echo Çıkmak için bir tuşa basın...
+echo Press any key to exit...
 pause >nul 

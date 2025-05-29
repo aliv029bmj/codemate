@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Eklentiyi Başlat",
+      "name": "Start Extension",
       "type": "extensionHost",
       "request": "launch",
       "args": [
@@ -11,10 +11,10 @@
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
       ],
-      "preLaunchTask": "Kurulum ve Derleme"
+      "preLaunchTask": "Install and Build"
     },
     {
-      "name": "Eklentiyi Hata Ayıkla",
+      "name": "Debug Extension",
       "type": "extensionHost",
       "request": "launch",
       "args": [
@@ -24,7 +24,7 @@
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
       ],
-      "preLaunchTask": "Kurulum ve Derleme"
+      "preLaunchTask": "Install and Build"
     }
   ]
-} 
+}
