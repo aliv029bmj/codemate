@@ -21,7 +21,7 @@ Code566 enhances your coding experience by replacing the standard line/column di
 4. Click Install
 
 ### Via Direct Download
-1. Download the latest `.vsix` file from the [Releases](https://github.com/aliv029bmj/code566/releases) page
+1. Download the latest `.vsix` file from the [Releases](https://github.com/aliv029bmj/codemate/releases) page
 2. In VS Code, from the Extensions view (Ctrl+Shift+X), click "..." at the top
 3. Select "Install from VSIX..."
 4. Choose the downloaded file
@@ -51,4 +51,4 @@ If you encounter any issues:
 2. Right-click on Code566 in the Extensions panel and select "Extension Settings"
 3. Check the "Output" panel for activation errors
 
-For help or more information, refer to the GitHub repository: https://github.com/aliv029bmj/code566
+For help or more information, refer to the GitHub repository: https://github.com/aliv029bmj/codemate

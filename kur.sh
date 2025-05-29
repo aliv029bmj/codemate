@@ -17,7 +17,7 @@ if ! command -v git &> /dev/null; then
 fi
 
 # GitHub repository info
-REPO_URL="https://github.com/aliv029bmj/code566.git"
+REPO_URL="https://github.com/aliv029bmj/codemate.git"
 REPO_NAME="code566"
 
 # Installation directory
