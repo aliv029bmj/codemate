@@ -14,6 +14,9 @@ let extensionContext: vscode.ExtensionContext;
 // Mode manager instance
 let modeManager: ModeManager;
 
+// Status bar item for when no mode is selected
+let noModeStatusBarItem: vscode.StatusBarItem;
+
 /**
  * Activate the extension
  * @param context The extension context
@@ -25,6 +28,14 @@ export function activate(context: vscode.ExtensionContext) {
   // Initialize mode manager
   modeManager = new ModeManager(context);
 
+  // Create status bar item for when no mode is selected
+  noModeStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  noModeStatusBarItem.text = '$(info) Select Code566 Mode';
+  noModeStatusBarItem.tooltip = 'Click to select a Code566 mode';
+  noModeStatusBarItem.command = 'code566.selectMode';
+  noModeStatusBarItem.show();
+  context.subscriptions.push(noModeStatusBarItem);
+
   // Register all modes
   registerModes();
 
@@ -34,8 +45,28 @@ export function activate(context: vscode.ExtensionContext) {
   // Set up cursor position change listener
   setupCursorListener(context);
 
-  // Activate the last selected mode or default to pixel pet mode
-  activateLastOrDefaultMode();
+  // Check if a mode was previously active
+  const lastModeId = extensionContext.globalState.get<string>('code566.activeMode');
+
+  if (lastModeId) {
+    // Activate the last used mode if there was one
+    modeManager.activateMode(lastModeId);
+    noModeStatusBarItem.hide();
+  } else {
+    // Show welcome message if this is first time
+    const hasShownWelcome = context.globalState.get<boolean>('code566.hasShownWelcome', false);
+    if (!hasShownWelcome) {
+      vscode.window.showInformationMessage(
+        'Welcome to Code566! Please select a mode to enhance your line/column display.',
+        'Select Mode'
+      ).then(selection => {
+        if (selection === 'Select Mode') {
+          vscode.commands.executeCommand('code566.selectMode');
+        }
+      });
+      context.globalState.update('code566.hasShownWelcome', true);
+    }
+  }
 
   // Export context for use in modes
   return {
@@ -73,14 +104,36 @@ function registerCommands(context: vscode.ExtensionContext) {
       id: mode.id
     }));
 
+    // Add option to disable all modes
+    items.push({
+      label: 'Disable All Modes',
+      description: 'Turn off Code566 enhancement',
+      id: 'none'
+    });
+
     // Show quick pick to select mode
     const selectedItem = await vscode.window.showQuickPick(items, {
       placeHolder: 'Select a Code566 mode'
     });
 
-    // Activate selected mode
+    // Handle mode selection
     if (selectedItem) {
-      modeManager.activateMode(selectedItem.id);
+      if (selectedItem.id === 'none') {
+        // Deactivate current mode if there is one
+        const activeMode = modeManager.getActiveMode();
+        if (activeMode) {
+          activeMode.deactivate();
+        }
+        // Update global state
+        extensionContext.globalState.update('code566.activeMode', undefined);
+        // Show the no mode status bar item
+        noModeStatusBarItem.show();
+      } else {
+        // Activate selected mode
+        modeManager.activateMode(selectedItem.id);
+        // Hide the no mode status bar item
+        noModeStatusBarItem.hide();
+      }
     }
   });
 
@@ -135,22 +188,15 @@ function setupCursorListener(context: vscode.ExtensionContext) {
 }
 
 /**
- * Activate the last selected mode or default to pixel pet mode
- */
-function activateLastOrDefaultMode() {
-  // Get last active mode from global state or use default
-  const lastModeId = extensionContext.globalState.get<string>('code566.activeMode', 'pixelpet');
-
-  // Activate the mode
-  if (!modeManager.activateMode(lastModeId)) {
-    // If activation failed, use pixel pet mode as fallback
-    modeManager.activateMode('pixelpet');
-  }
-}
-
-/**
  * Deactivate the extension
  */
 export function deactivate() {
-  // Nothing specific to clean up
+  // Deactivate current mode if there is one
+  const activeMode = modeManager.getActiveMode();
+  if (activeMode) {
+    activeMode.deactivate();
+  }
+
+  // Hide status bar items
+  noModeStatusBarItem.hide();
 }

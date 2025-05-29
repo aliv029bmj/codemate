@@ -68,9 +68,14 @@ For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
 
 ## Usage
 
-1. After installation, open the Command Palette (`Ctrl+Shift+P` or `F1`)
-2. Type "Code566: Select Mode" and press Enter
-3. Choose your preferred mode from the list
+After installation, Code566 starts with no mode selected by default. To start using the extension:
+
+1. Click on the "Select Code566 Mode" button in the status bar, or
+2. Open the Command Palette (`Ctrl+Shift+P` or `F1`)
+3. Type "Code566: Select Mode" and press Enter
+4. Choose your preferred mode from the list
+
+Only one mode can be active at a time. You can switch between modes or disable all modes through the same command.
 
 Each mode has its own unique commands and features:
 
@@ -89,6 +94,8 @@ You can configure Code566 through VS Code settings:
 1. Open VS Code settings (`Ctrl+,`)
 2. Search for "Code566"
 3. Adjust settings according to your preferences
+
+The `code566.activeMode` setting will reflect your current mode choice, but it's recommended to use the Command Palette or status bar to change modes.
 
 ## Contributing
 

@@ -2,7 +2,7 @@
   "name": "code566",
   "displayName": "Code566",
   "description": "Enhances the standard line/column display with fun user modes",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "aliv029bmj",
   "icon": "resources/icon.png",
   "engines": {
@@ -50,9 +50,12 @@
       "title": "Code566",
       "properties": {
         "code566.activeMode": {
-          "type": "string",
-          "default": "pixelpet",
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
+            null,
             "pixelpet",
             "travel",
             "stats",
@@ -62,6 +65,7 @@
             "records"
           ],
           "enumDescriptions": [
+            "No mode selected",
             "Show a virtual pet that reacts to your coding behavior",
             "Travel to different cities based on cursor position",
             "Display a HUD with coding statistics",
@@ -70,7 +74,7 @@
             "Detect and display code structure information",
             "Track and display line/column records"
           ],
-          "description": "The active mode for Code566"
+          "description": "The active mode for Code566. Select 'null' to disable all modes."
         }
       }
     }

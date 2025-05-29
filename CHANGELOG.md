@@ -2,6 +2,21 @@
 
 All notable changes to the "Code566" extension will be documented in this file.
 
+## [0.2.0] - 2024-07-10
+
+### Added
+- "Disable All Modes" option in the mode selector
+- Status bar indicator when no mode is selected
+- Welcome message for first-time users
+
+### Changed
+- Extension now starts with no mode selected by default
+- Updated configuration to allow null as a valid active mode value
+- Improved mode selection behavior to ensure only one mode is active at a time
+
+### Fixed
+- Issue where a default mode would be automatically selected on startup
+
 ## [0.1.0] - 2024-07-10
 
 ### Added
