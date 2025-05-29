@@ -1,99 +1,80 @@
 #!/bin/bash
 
-# Code566 One-Command Installation Script
-echo "🚀 Starting Code566 One-Command Installation..."
+# Code566 - Tek Komutla Kurulum Betiği
+echo "=========================================="
+echo "   Code566 VS Code Eklenti Kurulumu       "
+echo "=========================================="
+echo ""
 
-# Check for Node.js and npm
-check_nodejs() {
-    if ! command -v node &> /dev/null; then
-        echo "❌ Node.js not found. Installing Node.js and npm..."
-        
-        # Detect OS
-        if [ -f /etc/os-release ]; then
-            . /etc/os-release
-            OS=$NAME
-        else
-            OS=$(uname -s)
-        fi
-        
-        # Install Node.js based on OS
-        case "$OS" in
-            "Ubuntu"*|"Debian"*)
-                sudo apt update
-                sudo apt install -y nodejs npm
-                ;;
-            "Fedora"*|"CentOS"*|"Red Hat"*)
-                sudo dnf install -y nodejs npm
-                ;;
-            "Arch"*)
-                sudo pacman -Sy nodejs npm
-                ;;
-            "Darwin")  # macOS
-                echo "Please install Node.js and npm using Homebrew with: brew install node"
-                echo "Then run this script again."
-                exit 1
-                ;;
-            *)
-                echo "Unsupported OS. Please install Node.js manually from https://nodejs.org/"
-                exit 1
-                ;;
-        esac
-    fi
-    
-    if ! command -v npm &> /dev/null; then
-        echo "❌ npm not found. Please install npm manually."
-        exit 1
-    fi
-    
-    echo "✅ Node.js and npm are installed."
-}
-
-# Check for VS Code
-check_vscode() {
-    if ! command -v code &> /dev/null; then
-        echo "❌ VS Code not found. Please install VS Code first."
-        echo "Visit https://code.visualstudio.com/download for installation instructions."
-        exit 1
-    fi
-    echo "✅ VS Code is installed."
-}
-
-# Run prerequisite checks
-check_nodejs
-check_vscode
-
-# Create temporary directory
+# Geçici dizin oluştur
 TEMP_DIR=$(mktemp -d)
-cd "$TEMP_DIR" || exit 1
+echo "Geçici dizin oluşturuldu: $TEMP_DIR"
 
-# Clone the repository
-echo "📥 Cloning repository..."
-git clone https://github.com/aliv029bmj/codemate.git
-cd codemate || exit 1
+# En son VSIX dosyasını indirmeye çalış
+echo "Code566 VSIX paketini indiriyorum..."
 
-# Install dependencies
-echo "📦 Installing dependencies..."
-npm install
-
-# Build and package
-echo "🔨 Building extension..."
-npm run compile
-npm run package
-
-# Install extension
-echo "🔌 Installing extension to VS Code..."
-VSIX_FILE=$(ls code566-*.vsix 2>/dev/null)
-if [ -n "$VSIX_FILE" ]; then
-    code --install-extension "$VSIX_FILE"
-    echo "✅ Installation complete! Restart VS Code and type 'Code566: Select Mode' in the command palette to start."
+if command -v curl >/dev/null 2>&1; then
+  # curl kullanarak indir
+  curl -L "https://github.com/aliv029bmj/codemate/releases/latest/download/code566.vsix" -o "$TEMP_DIR/code566.vsix"
+elif command -v wget >/dev/null 2>&1; then
+  # wget kullanarak indir
+  wget "https://github.com/aliv029bmj/codemate/releases/latest/download/code566.vsix" -O "$TEMP_DIR/code566.vsix"
 else
-    echo "❌ Failed to build extension package."
-    exit 1
+  echo "Hata: curl veya wget yüklü değil. Lütfen bu araçlardan birini yükleyin ve tekrar deneyin."
+  exit 1
 fi
 
-# Clean up
-echo "🧹 Cleaning up temporary files..."
-cd ~ || exit 1
-rm -rf "$TEMP_DIR"
+# İndirme başarılı mı kontrol et
+if [ ! -f "$TEMP_DIR/code566.vsix" ]; then
+  echo "Hata: VSIX paketi indirilemedi."
+  
+  # Yerel VSIX dosyasını kontrol et
+  LOCAL_VSIX=$(find . -maxdepth 1 -name "code566-*.vsix" | sort -V | tail -n1)
+  
+  if [ -n "$LOCAL_VSIX" ]; then
+    echo "Yerel VSIX paketi bulundu: $LOCAL_VSIX"
+    echo "Bu paketi kullanmaya devam ediyorum..."
+    VSIX_PATH="$LOCAL_VSIX"
+  else
+    echo "Kurulum başarısız oldu."
+    exit 1
+  fi
+else
+  VSIX_PATH="$TEMP_DIR/code566.vsix"
+  echo "VSIX paketi başarıyla indirildi: $VSIX_PATH"
+fi
 
-echo "🎉 Code566 successfully installed!" 
+# VS Code komut satırı aracının mevcut olup olmadığını kontrol et
+if command -v code >/dev/null 2>&1; then
+  echo "VS Code kurulumu ekleniyor..."
+  code --install-extension "$VSIX_PATH"
+  
+  if [ $? -eq 0 ]; then
+    echo "Kurulum başarılı!"
+    echo "VS Code'u yeniden başlatın ve Komut Paleti'nden (Ctrl+Shift+P) 'Code566: Select Mode' komutunu çalıştırın."
+  else
+    echo "Kurulum sırasında hata oluştu."
+    echo "Lütfen VSIX dosyasını manuel olarak şuradan yükleyin: $VSIX_PATH"
+  fi
+else
+  echo "VS Code komut satırı aracı bulunamadı."
+  echo "Lütfen VSIX dosyasını VS Code içinden Extensions panelindeki '...' menüsünden 'Install from VSIX...' seçeneğini kullanarak yükleyin."
+  echo "VSIX dosyası: $VSIX_PATH"
+fi
+
+# Temizlik işlemi
+if [ "$TEMP_DIR" != "" ] && [ -d "$TEMP_DIR" ]; then
+  echo "Geçici dosyalar temizleniyor..."
+  rm -rf "$TEMP_DIR"
+fi
+
+echo ""
+echo "Code566 kurulumu tamamlandı!"
+echo ""
+echo "Kullanmaya başlamak için:"
+echo "1. VS Code'u açın (veya yeniden başlatın)"
+echo "2. Komut Paleti'ni açın (Ctrl+Shift+P veya F1)"
+echo "3. 'Code566: Select Mode' yazın ve Enter'a basın"
+echo "4. Listeden istediğiniz modu seçin"
+echo ""
+echo "İyi kodlamalar!" 

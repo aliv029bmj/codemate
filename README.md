@@ -52,37 +52,42 @@ Tracks your coding records like highest line number, rightmost column, longest l
 
 ## Installation
 
+### Quick Install (Recommended)
+
+#### For Linux/macOS users:
+```bash
+# Make the script executable
+chmod +x ./scripts/install.sh
+
+# Run the installation script
+./scripts/install.sh
+```
+
+#### For Windows users:
+```powershell
+# Run the PowerShell installation script
+.\scripts\install.ps1
+```
+
 ### Via VS Code Marketplace
 1. Open VS Code
 2. Click the Extensions view icon in the Sidebar or press `Ctrl+Shift+X`
 3. Search for "Code566"
 4. Click Install
 
-### Via GitHub Repository
+### Manual Installation
 ```bash
-# Clone the repository
-git clone https://github.com/aliv029bmj/codemate.git
-
-# Navigate to the repository folder
-cd codemate
-
-# Install dependencies
-npm install
-
-# Package the extension
-npm run package
-
-# Install to VS Code
-code --install-extension code566-*.vsix
+# Install from the VSIX file
+code --install-extension code566-0.2.0.vsix
 ```
 
-For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
+For detailed installation instructions, see [INSTALL.md](INSTALL.md).
 
 ## Usage
 
 After installation, Code566 starts with no mode selected by default. To start using the extension:
 
-1. Click on the "Select Code566 Mode" button in the status bar, or
+1. Click on the "Code566" button in the status bar, or
 2. Open the Command Palette (`Ctrl+Shift+P` or `F1`)
 3. Type "Code566: Select Mode" and press Enter
 4. Choose your preferred mode from the list

@@ -1,7 +1,7 @@
 {
   "name": "code566",
-  "displayName": "Code566",
-  "description": "Enhances the standard line/column display with fun user modes",
+  "displayName": "Code566 - Enhanced Line/Column Indicator",
+  "description": "Enhances the standard line/column display with fun and interactive user modes",
   "version": "0.2.0",
   "publisher": "aliv029bmj",
   "icon": "resources/icon.png",
@@ -9,7 +9,9 @@
     "vscode": "^1.60.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Visualization",
+    "Programming Languages"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -134,11 +136,13 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "test": "node ./out/test/runTest.js",
-    "package": "vsce package"
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/node": "^20.11.5",
     "@types/vscode": "^1.60.0",
+    "@vscode/vsce": "^2.22.0",
     "typescript": "^5.3.3",
     "vscode-test": "^1.6.1"
   },
@@ -146,6 +150,10 @@
     "type": "git",
     "url": "https://github.com/aliv029bmj/codemate.git"
   },
+  "bugs": {
+    "url": "https://github.com/aliv029bmj/codemate/issues"
+  },
+  "homepage": "https://github.com/aliv029bmj/codemate",
   "license": "MIT",
   "keywords": [
     "line number",
@@ -154,10 +162,26 @@
     "productivity",
     "fun",
     "visualization",
-    "statistics"
+    "statistics",
+    "pet",
+    "travel",
+    "heatmap",
+    "code metrics"
   ],
   "galleryBanner": {
     "color": "#2D2D30",
     "theme": "dark"
-  }
+  },
+  "badges": [
+    {
+      "url": "https://img.shields.io/badge/License-MIT-blue.svg",
+      "href": "https://github.com/aliv029bmj/codemate/blob/main/LICENSE",
+      "description": "MIT License"
+    },
+    {
+      "url": "https://img.shields.io/badge/VS%20Code-^1.60.0-blue.svg",
+      "href": "https://code.visualstudio.com/updates/v1_60",
+      "description": "VS Code ^1.60.0"
+    }
+  ]
 }
