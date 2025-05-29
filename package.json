@@ -51,6 +51,11 @@
         "command": "code566.resetRecords",
         "title": "Code566: Reset Line/Column Records",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "code566.disableAllModes",
+        "title": "Code566: Disable All Modes",
+        "icon": "$(close)"
       }
     ],
     "configuration": {
@@ -113,6 +118,10 @@
         },
         {
           "command": "code566.resetRecords",
+          "group": "Code566"
+        },
+        {
+          "command": "code566.disableAllModes",
           "group": "Code566"
         }
       ]

@@ -89,6 +89,23 @@ function registerModes() {
 }
 
 /**
+ * Disable all modes and reset the UI
+ */
+function disableAllModes() {
+  // Use the ModeManager's dispose method to properly clean up
+  modeManager.dispose();
+
+  // Update global state to indicate no active mode
+  extensionContext.globalState.update('code566.activeMode', null);
+
+  // Show the no mode status bar item
+  noModeStatusBarItem.show();
+
+  // Show confirmation message
+  vscode.window.showInformationMessage('All Code566 modes have been disabled.');
+}
+
+/**
  * Register extension commands
  * @param context The extension context
  */
@@ -119,15 +136,8 @@ function registerCommands(context: vscode.ExtensionContext) {
     // Handle mode selection
     if (selectedItem) {
       if (selectedItem.id === 'none') {
-        // Deactivate current mode if there is one
-        const activeMode = modeManager.getActiveMode();
-        if (activeMode) {
-          activeMode.deactivate();
-        }
-        // Update global state
-        extensionContext.globalState.update('code566.activeMode', undefined);
-        // Show the no mode status bar item
-        noModeStatusBarItem.show();
+        // Disable all modes
+        disableAllModes();
       } else {
         // Activate selected mode
         modeManager.activateMode(selectedItem.id);
@@ -137,8 +147,13 @@ function registerCommands(context: vscode.ExtensionContext) {
     }
   });
 
+  // Register a dedicated command to disable all modes
+  const disableModesCommand = vscode.commands.registerCommand('code566.disableAllModes', () => {
+    disableAllModes();
+  });
+
   // Add commands to context subscriptions
-  context.subscriptions.push(selectModeCommand);
+  context.subscriptions.push(selectModeCommand, disableModesCommand);
 }
 
 /**
