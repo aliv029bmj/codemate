@@ -14,8 +14,8 @@ let extensionContext: vscode.ExtensionContext;
 // Mode manager instance
 let modeManager: ModeManager;
 
-// Status bar item for when no mode is selected
-let noModeStatusBarItem: vscode.StatusBarItem;
+// Status bar item for mode selector
+let modeStatusBarItem: vscode.StatusBarItem;
 
 /**
  * Activate the extension
@@ -28,13 +28,13 @@ export function activate(context: vscode.ExtensionContext) {
   // Initialize mode manager
   modeManager = new ModeManager(context);
 
-  // Create status bar item for when no mode is selected
-  noModeStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-  noModeStatusBarItem.text = '$(info) Select Code566 Mode';
-  noModeStatusBarItem.tooltip = 'Click to select a Code566 mode';
-  noModeStatusBarItem.command = 'code566.selectMode';
-  noModeStatusBarItem.show();
-  context.subscriptions.push(noModeStatusBarItem);
+  // Create status bar item for mode selection
+  modeStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+  modeStatusBarItem.text = '$(gear) Code566';
+  modeStatusBarItem.tooltip = 'Click to select a Code566 mode';
+  modeStatusBarItem.command = 'code566.selectMode';
+  modeStatusBarItem.show();
+  context.subscriptions.push(modeStatusBarItem);
 
   // Register all modes
   registerModes();
@@ -44,29 +44,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Set up cursor position change listener
   setupCursorListener(context);
-
-  // Check if a mode was previously active
-  const lastModeId = extensionContext.globalState.get<string>('code566.activeMode');
-
-  if (lastModeId) {
-    // Activate the last used mode if there was one
-    modeManager.activateMode(lastModeId);
-    noModeStatusBarItem.hide();
-  } else {
-    // Show welcome message if this is first time
-    const hasShownWelcome = context.globalState.get<boolean>('code566.hasShownWelcome', false);
-    if (!hasShownWelcome) {
-      vscode.window.showInformationMessage(
-        'Welcome to Code566! Please select a mode to enhance your line/column display.',
-        'Select Mode'
-      ).then(selection => {
-        if (selection === 'Select Mode') {
-          vscode.commands.executeCommand('code566.selectMode');
-        }
-      });
-      context.globalState.update('code566.hasShownWelcome', true);
-    }
-  }
 
   // Export context for use in modes
   return {
@@ -89,23 +66,6 @@ function registerModes() {
 }
 
 /**
- * Disable all modes and reset the UI
- */
-function disableAllModes() {
-  // Use the ModeManager's dispose method to properly clean up
-  modeManager.dispose();
-
-  // Update global state to indicate no active mode
-  extensionContext.globalState.update('code566.activeMode', null);
-
-  // Show the no mode status bar item
-  noModeStatusBarItem.show();
-
-  // Show confirmation message
-  vscode.window.showInformationMessage('All Code566 modes have been disabled.');
-}
-
-/**
  * Register extension commands
  * @param context The extension context
  */
@@ -117,7 +77,7 @@ function registerCommands(context: vscode.ExtensionContext) {
     // Create quick pick items for each mode
     const items = modes.map(mode => ({
       label: mode.name,
-      description: '',
+      description: mode.description || '',
       id: mode.id
     }));
 
@@ -141,8 +101,9 @@ function registerCommands(context: vscode.ExtensionContext) {
       } else {
         // Activate selected mode
         modeManager.activateMode(selectedItem.id);
-        // Hide the no mode status bar item
-        noModeStatusBarItem.hide();
+
+        // Update status bar text to show active mode
+        updateStatusBarText(selectedItem.label);
       }
     }
   });
@@ -154,6 +115,35 @@ function registerCommands(context: vscode.ExtensionContext) {
 
   // Add commands to context subscriptions
   context.subscriptions.push(selectModeCommand, disableModesCommand);
+}
+
+/**
+ * Disable all modes and reset the UI
+ */
+function disableAllModes() {
+  // Use the ModeManager's dispose method to properly clean up
+  modeManager.dispose();
+
+  // Update global state to indicate no active mode
+  extensionContext.globalState.update('code566.activeMode', null);
+
+  // Reset status bar text
+  updateStatusBarText();
+
+  // Show confirmation message
+  vscode.window.showInformationMessage('All Code566 modes have been disabled.');
+}
+
+/**
+ * Updates the status bar text based on the active mode
+ * @param modeName Optional name of the active mode
+ */
+function updateStatusBarText(modeName?: string) {
+  if (modeName) {
+    modeStatusBarItem.text = `$(check) Code566: ${modeName}`;
+  } else {
+    modeStatusBarItem.text = '$(gear) Code566';
+  }
 }
 
 /**
@@ -182,5 +172,5 @@ export function deactivate() {
   modeManager.dispose();
 
   // Hide status bar items
-  noModeStatusBarItem.hide();
+  modeStatusBarItem.hide();
 }

@@ -15,6 +15,11 @@ export interface IMode {
   id: string;
 
   /**
+   * The description of the mode
+   */
+  description?: string;
+
+  /**
    * The status bar item to display the mode information
    */
   statusBarItem: vscode.StatusBarItem;

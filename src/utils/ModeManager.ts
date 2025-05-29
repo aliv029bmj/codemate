@@ -173,8 +173,8 @@ export class ModeManager {
   }
 
   /**
-   * Disposes all mode commands
-   * For cleanup when the extension is deactivated
+   * Disposes all mode resources and commands
+   * For cleanup when the extension is deactivated or all modes are disabled
    */
   public dispose(): void {
     // Deactivate current mode if there is one
@@ -187,5 +187,8 @@ export class ModeManager {
       });
     });
     this.modeCommands.clear();
+
+    // Clear active mode reference
+    this.activeMode = undefined;
   }
 }
