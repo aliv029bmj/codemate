@@ -1,6 +1,15 @@
 import * as vscode from 'vscode';
 import { BaseMode } from '../types/BaseMode';
 
+// Mock AudioContext interface for TypeScript compiler
+interface AudioContext {
+  // Mock interface to make TypeScript happy
+  destination: any;
+  createOscillator(): any;
+  createGain(): any;
+  currentTime: number;
+}
+
 /**
  * MusicByCodeMode plays dynamic music based on line and column activity
  */
