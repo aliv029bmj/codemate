@@ -22,6 +22,26 @@
       {
         "command": "code566.toggleStats",
         "title": "Code566: Toggle Stats HUD"
+      },
+      {
+        "command": "code566.toggleHeatMap",
+        "title": "Code566: Toggle Heat Map"
+      },
+      {
+        "command": "code566.configureLineLength",
+        "title": "Code566: Configure Line Length Settings"
+      },
+      {
+        "command": "code566.toggleCodeFeature",
+        "title": "Code566: Toggle Code Feature Detector"
+      },
+      {
+        "command": "code566.showRecords",
+        "title": "Code566: Show Line/Column Records"
+      },
+      {
+        "command": "code566.resetRecords",
+        "title": "Code566: Reset Line/Column Records"
       }
     ],
     "configuration": {
@@ -29,22 +49,24 @@
       "properties": {
         "code566.activeMode": {
           "type": "string",
-          "default": "story",
+          "default": "pixelpet",
           "enum": [
-            "story",
             "pixelpet",
-            "music",
-            "riddle",
             "travel",
-            "stats"
+            "stats",
+            "heatmap",
+            "linelength",
+            "codefeature",
+            "records"
           ],
           "enumDescriptions": [
-            "Display a tiny part of a story on every line/column move",
-            "Show a virtual pet that reacts to coding behavior",
-            "Play dynamic music based on line and column activity",
-            "Display a new riddle at each line change",
-            "Virtually travel to a new city based on line/column",
-            "Show a stats dashboard with useful real-time info"
+            "Show a virtual pet that reacts to your coding behavior",
+            "Travel to different cities based on cursor position",
+            "Display a HUD with coding statistics",
+            "Show a heat map visualization of your code edits",
+            "Highlight lines that exceed recommended length",
+            "Detect and display code structure information",
+            "Track and display line/column records"
           ],
           "description": "The active mode for Code566"
         }

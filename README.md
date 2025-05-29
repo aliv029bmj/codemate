@@ -4,13 +4,21 @@
 **Code566** transforms your VS Code line/column indicator into a fun, interactive experience with selectable user modes. Make your coding sessions more engaging and enjoyable!
 
 ## Features
-Code566 enhances your coding experience by replacing the standard line/column display with one of six interactive modes:
+Code566 enhances your coding experience by replacing the standard line/column display with one of seven interactive modes:
 
 1. **Pixel Pet Mode** - A virtual pet that reacts to your coding behavior, gaining experience and energy based on your typing patterns.
 
 2. **Travel Mode** - Virtually travel to different cities around the world based on your cursor position, with distance tracking and city information.
 
 3. **Stats HUD Mode** - Displays a comprehensive dashboard of coding statistics including typing speed, character count, and line information.
+
+4. **Heat Map Mode** - Visualizes your editing activity with a color-coded heat map, showing which parts of your code receive the most attention.
+
+5. **Line Length Warning Mode** - Highlights lines that exceed recommended length limits, with customizable settings for different programming languages.
+
+6. **Code Feature Detector Mode** - Detects and displays information about code structures at your cursor position, providing insights into your codebase.
+
+7. **Line/Column Records Mode** - Tracks and displays interesting statistics and records about your line and column positions across your coding sessions.
 
 ## Installation
 
@@ -20,35 +28,54 @@ Code566 enhances your coding experience by replacing the standard line/column di
 3. Search for "Code566"
 4. Click Install
 
-### Via Direct Download
-1. Download the latest `.vsix` file from the [Releases](https://github.com/aliv029bmj/codemate/releases) page
-2. In VS Code, from the Extensions view (Ctrl+Shift+X), click "..." at the top
-3. Select "Install from VSIX..."
-4. Choose the downloaded file
+### Via GitHub Repository
+```bash
+# Clone the repository
+git clone https://github.com/aliv029bmj/codemate.git
+
+# Navigate to the repository folder
+cd codemate
+
+# Install dependencies
+npm install
+
+# Package the extension
+npm run package
+
+# Install to VS Code
+code --install-extension code566-*.vsix
+```
+
+For detailed installation instructions, see [INSTALLATION.md](INSTALLATION.md).
 
 ## Usage
 
-### Selecting a Mode
-You can select your preferred mode in three ways:
-- Command Palette: `Code566: Select Mode`
-- Status bar: Click on the Code566 indicator
-- Settings: Configure your preferred mode in settings
+1. After installation, open the Command Palette (`Ctrl+Shift+P` or `F1`)
+2. Type "Code566: Select Mode" and press Enter
+3. Choose your preferred mode from the list
 
-### Configuration
-The extension provides the following configuration options:
+Each mode has its own unique commands and features:
 
-* `code566.activeMode`: Sets the active Code566 mode (pixelpet, travel, stats)
+- **Pixel Pet Mode**: Watch your virtual pet grow as you code
+- **Travel Mode**: Explore different cities without leaving your editor
+- **Stats HUD Mode**: Toggle the stats dashboard with "Code566: Toggle Stats HUD"
+- **Heat Map Mode**: Visualize your code activity with "Code566: Toggle Heat Map"
+- **Line Length Warning Mode**: Configure line length settings with "Code566: Configure Line Length Settings"
+- **Code Feature Detector Mode**: View code structure information with "Code566: Toggle Code Feature Detector"
+- **Line/Column Records Mode**: Track your coding records with "Code566: Show Line/Column Records"
 
-### Commands
+## Configuration
 
-* `code566.selectMode`: Open the mode selector menu
-* `code566.toggleStats`: Toggle the Stats HUD visibility (when in Stats mode)
+You can configure Code566 through VS Code settings:
 
-## Troubleshooting
+1. Open VS Code settings (`Ctrl+,`)
+2. Search for "Code566"
+3. Adjust settings according to your preferences
 
-If you encounter any issues:
-1. Make sure VS Code is up to date
-2. Right-click on Code566 in the Extensions panel and select "Extension Settings"
-3. Check the "Output" panel for activation errors
+## Contributing
 
-For help or more information, refer to the GitHub repository: https://github.com/aliv029bmj/codemate
+Contributions are welcome! Feel free to submit issues or pull requests to the [GitHub repository](https://github.com/aliv029bmj/codemate).
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

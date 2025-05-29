@@ -3,6 +3,10 @@ import { ModeManager } from './utils/ModeManager';
 import { PixelPetMode } from './modes/PixelPetMode';
 import { TravelMode } from './modes/TravelMode';
 import { StatsHUDMode } from './modes/StatsHUDMode';
+import { HeatMapMode } from './modes/HeatMapMode';
+import { LineLengthWarningMode } from './modes/LineLengthWarningMode';
+import { CodeFeatureDetectorMode } from './modes/CodeFeatureDetectorMode';
+import { LineColumnRecordsMode } from './modes/LineColumnRecordsMode';
 
 // Extension context to be accessible for modes
 let extensionContext: vscode.ExtensionContext;
@@ -47,6 +51,10 @@ function registerModes() {
   modeManager.registerMode(new PixelPetMode());
   modeManager.registerMode(new TravelMode());
   modeManager.registerMode(new StatsHUDMode());
+  modeManager.registerMode(new HeatMapMode());
+  modeManager.registerMode(new LineLengthWarningMode());
+  modeManager.registerMode(new CodeFeatureDetectorMode());
+  modeManager.registerMode(new LineColumnRecordsMode());
 }
 
 /**
@@ -76,8 +84,36 @@ function registerCommands(context: vscode.ExtensionContext) {
     }
   });
 
-  // Add command to context subscriptions
-  context.subscriptions.push(selectModeCommand);
+  // Register commands for specific modes
+  const toggleHeatMapCommand = vscode.commands.registerCommand('code566.toggleHeatMap', () => {
+    // This command is handled by the HeatMapMode class
+  });
+
+  const configureLineLengthCommand = vscode.commands.registerCommand('code566.configureLineLength', () => {
+    // This command is handled by the LineLengthWarningMode class
+  });
+
+  const toggleCodeFeatureCommand = vscode.commands.registerCommand('code566.toggleCodeFeature', () => {
+    // This command is handled by the CodeFeatureDetectorMode class
+  });
+
+  const showRecordsCommand = vscode.commands.registerCommand('code566.showRecords', () => {
+    // This command is handled by the LineColumnRecordsMode class
+  });
+
+  const resetRecordsCommand = vscode.commands.registerCommand('code566.resetRecords', () => {
+    // This command is handled by the LineColumnRecordsMode class
+  });
+
+  // Add commands to context subscriptions
+  context.subscriptions.push(
+    selectModeCommand,
+    toggleHeatMapCommand,
+    configureLineLengthCommand,
+    toggleCodeFeatureCommand,
+    showRecordsCommand,
+    resetRecordsCommand
+  );
 }
 
 /**
