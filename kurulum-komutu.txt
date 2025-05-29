@@ -1,1 +1,1 @@
-curl -sSL https://raw.githubusercontent.com/aliv029bmj/codemate/main/install-one-command.sh | bash 
+curl -sSL https://raw.githubusercontent.com/aliv029bmj/codemate/main/install.sh | bash 
