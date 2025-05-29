@@ -4,6 +4,18 @@
   <img src="resources/icon.png" width="128" height="128" alt="Code566 Logo">
 </p>
 
+<div align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=aliv029bmj.code566">
+    <img src="https://img.shields.io/badge/VS%20Code-v1.60+-blue.svg" alt="VS Code">
+  </a>
+  <a href="https://github.com/aliv029bmj/codemate/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
+  </a>
+  <a href="https://github.com/aliv029bmj/codemate">
+    <img src="https://img.shields.io/github/stars/aliv029bmj/codemate?style=social" alt="GitHub Stars">
+  </a>
+</div>
+
 ## Overview
 **Code566** transforms your VS Code line/column indicator into a fun, interactive experience with selectable user modes. Make your coding sessions more engaging and enjoyable!
 

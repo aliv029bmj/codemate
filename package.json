@@ -19,31 +19,38 @@
     "commands": [
       {
         "command": "code566.selectMode",
-        "title": "Code566: Select Mode"
+        "title": "Code566: Select Mode",
+        "icon": "$(gear)"
       },
       {
         "command": "code566.toggleStats",
-        "title": "Code566: Toggle Stats HUD"
+        "title": "Code566: Toggle Stats HUD",
+        "icon": "$(graph)"
       },
       {
         "command": "code566.toggleHeatMap",
-        "title": "Code566: Toggle Heat Map"
+        "title": "Code566: Toggle Heat Map",
+        "icon": "$(flame)"
       },
       {
         "command": "code566.configureLineLength",
-        "title": "Code566: Configure Line Length Settings"
+        "title": "Code566: Configure Line Length Settings",
+        "icon": "$(ruler)"
       },
       {
         "command": "code566.toggleCodeFeature",
-        "title": "Code566: Toggle Code Feature Detector"
+        "title": "Code566: Toggle Code Feature Detector",
+        "icon": "$(symbol-class)"
       },
       {
         "command": "code566.showRecords",
-        "title": "Code566: Show Line/Column Records"
+        "title": "Code566: Show Line/Column Records",
+        "icon": "$(trophy)"
       },
       {
         "command": "code566.resetRecords",
-        "title": "Code566: Reset Line/Column Records"
+        "title": "Code566: Reset Line/Column Records",
+        "icon": "$(refresh)"
       }
     ],
     "configuration": {
@@ -77,6 +84,38 @@
           "description": "The active mode for Code566. Select 'null' to disable all modes."
         }
       }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "code566.selectMode",
+          "group": "Code566"
+        },
+        {
+          "command": "code566.toggleStats",
+          "group": "Code566"
+        },
+        {
+          "command": "code566.toggleHeatMap",
+          "group": "Code566"
+        },
+        {
+          "command": "code566.configureLineLength",
+          "group": "Code566"
+        },
+        {
+          "command": "code566.toggleCodeFeature",
+          "group": "Code566"
+        },
+        {
+          "command": "code566.showRecords",
+          "group": "Code566"
+        },
+        {
+          "command": "code566.resetRecords",
+          "group": "Code566"
+        }
+      ]
     }
   },
   "scripts": {
@@ -107,5 +146,9 @@
     "fun",
     "visualization",
     "statistics"
-  ]
+  ],
+  "galleryBanner": {
+    "color": "#2D2D30",
+    "theme": "dark"
+  }
 }
