@@ -1,0 +1,68 @@
+{
+  "name": "codemate",
+  "displayName": "CodeMate",
+  "description": "Enhances the standard line/column display with fun user modes",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codemate.selectMode",
+        "title": "CodeMate: Select Mode"
+      },
+      {
+        "command": "codemate.toggleStats",
+        "title": "CodeMate: Toggle Stats HUD"
+      }
+    ],
+    "configuration": {
+      "title": "CodeMate",
+      "properties": {
+        "codemate.activeMode": {
+          "type": "string",
+          "default": "story",
+          "enum": ["story", "pixelpet", "music", "riddle", "travel", "stats"],
+          "enumDescriptions": [
+            "Display a tiny part of a story on every line/column move",
+            "Show a virtual pet that reacts to coding behavior",
+            "Play dynamic music based on line and column activity",
+            "Display a new riddle at each line change",
+            "Virtually travel to a new city based on line/column",
+            "Show a stats dashboard with useful real-time info"
+          ],
+          "description": "The active mode for CodeMate"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/vscode": "^1.60.0",
+    "typescript": "^5.3.3",
+    "vscode-test": "^1.6.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aliv029bmj/codemate.git"
+  },
+  "publisher": "aliv029bmj",
+  "license": "MIT"
+}
