@@ -3,6 +3,8 @@
   "displayName": "Code566",
   "description": "Enhances the standard line/column display with fun user modes",
   "version": "0.1.0",
+  "publisher": "aliv029bmj",
+  "icon": "resources/icon.png",
   "engines": {
     "vscode": "^1.60.0"
   },
@@ -92,6 +94,14 @@
     "type": "git",
     "url": "https://github.com/aliv029bmj/codemate.git"
   },
-  "publisher": "aliv029bmj",
-  "license": "MIT"
+  "license": "MIT",
+  "keywords": [
+    "line number",
+    "column",
+    "status bar",
+    "productivity",
+    "fun",
+    "visualization",
+    "statistics"
+  ]
 }

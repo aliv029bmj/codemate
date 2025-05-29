@@ -1,5 +1,9 @@
 # Code566
 
+<p align="center">
+  <img src="resources/icon.png" width="128" height="128" alt="Code566 Logo">
+</p>
+
 ## Overview
 **Code566** transforms your VS Code line/column indicator into a fun, interactive experience with selectable user modes. Make your coding sessions more engaging and enjoyable!
 
@@ -19,6 +23,20 @@ Code566 enhances your coding experience by replacing the standard line/column di
 6. **Code Feature Detector Mode** - Detects and displays information about code structures at your cursor position, providing insights into your codebase.
 
 7. **Line/Column Records Mode** - Tracks and displays interesting statistics and records about your line and column positions across your coding sessions.
+
+## Screenshots
+
+### Heat Map Mode
+Heat Map mode shows which parts of your code you edit most frequently, with a color gradient from green (low activity) to red (high activity).
+
+### Line Length Warning Mode
+This mode highlights lines that exceed recommended length, with different warning levels and language-specific configurations.
+
+### Code Feature Detector Mode
+Detects and displays detailed information about code structures like functions, classes, and variables at your cursor position.
+
+### Line/Column Records Mode
+Tracks your coding records like highest line number, rightmost column, longest line, and more across your coding sessions.
 
 ## Installation
 
