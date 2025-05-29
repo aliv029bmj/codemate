@@ -61,19 +61,21 @@ code --install-extension code566-*.vsix
 If you encounter any issues during the build process:
 
 1. Make sure Node.js is correctly installed:
+
    ```bash
    node --version
    # Should output v14.0.0 or higher
    ```
 
 2. Try cleaning the project:
+
    ```bash
    # Remove node_modules and compiled output
    rm -rf node_modules out dist
-   
+
    # Reinstall dependencies
    npm install
-   
+
    # Recompile
    npm run compile
    ```
@@ -150,4 +152,4 @@ If you encounter any issues during installation, please:
 2. Open a new issue if needed, including:
    - Your OS and VS Code version
    - Detailed steps to reproduce the issue
-   - Any error messages 
+   - Any error messages

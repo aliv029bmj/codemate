@@ -80,5 +80,3 @@ versioning_scheme=semver
 build_vsix_package=true
 auto_refresh_on_mode_change=true
 compatible_with_cursor_ai=true
-
-proje bitene kadar durma.

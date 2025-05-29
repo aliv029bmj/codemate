@@ -1,1 +1,0 @@
-curl -sSL https://raw.githubusercontent.com/aliv029bmj/codemate/main/install.sh | bash 

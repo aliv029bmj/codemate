@@ -17,9 +17,11 @@
 </div>
 
 ## Overview
+
 **Code566** transforms your VS Code line/column indicator into a fun, interactive experience with selectable user modes. Make your coding sessions more engaging and enjoyable!
 
 ## Features
+
 Code566 enhances your coding experience by replacing the standard line/column display with one of seven interactive modes:
 
 1. **Pixel Pet Mode** - A virtual pet that reacts to your coding behavior, gaining experience and energy based on your typing patterns.
@@ -39,15 +41,19 @@ Code566 enhances your coding experience by replacing the standard line/column di
 ## Screenshots
 
 ### Heat Map Mode
+
 Heat Map mode shows which parts of your code you edit most frequently, with a color gradient from green (low activity) to red (high activity).
 
 ### Line Length Warning Mode
+
 This mode highlights lines that exceed recommended length, with different warning levels and language-specific configurations.
 
 ### Code Feature Detector Mode
+
 Detects and displays detailed information about code structures like functions, classes, and variables at your cursor position.
 
 ### Line/Column Records Mode
+
 Tracks your coding records like highest line number, rightmost column, longest line, and more across your coding sessions.
 
 ## Installation
@@ -55,6 +61,7 @@ Tracks your coding records like highest line number, rightmost column, longest l
 ### Quick Install (Recommended)
 
 #### For Linux/macOS users:
+
 ```bash
 # Make the script executable
 chmod +x ./scripts/install.sh
@@ -64,18 +71,21 @@ chmod +x ./scripts/install.sh
 ```
 
 #### For Windows users:
+
 ```powershell
 # Run the PowerShell installation script
 .\scripts\install.ps1
 ```
 
 ### Via VS Code Marketplace
+
 1. Open VS Code
 2. Click the Extensions view icon in the Sidebar or press `Ctrl+Shift+X`
 3. Search for "Code566"
 4. Click Install
 
 ### Manual Installation
+
 ```bash
 # Install from the VSIX file
 code --install-extension code566-0.2.0.vsix

@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 function registerCommandSafely(id: string, callback: (...args: any[]) => any, context: vscode.ExtensionContext): vscode.Disposable | undefined {
   // Komut zaten kaydedilmiş mi kontrol et
   if (registeredCommandIds.has(id)) {
-    console.log(`Komut zaten kayıtlı: ${id}`);
+    console.log(`Command already registered: ${id}`);
     return undefined;
   }
 
