@@ -10,39 +10,55 @@ if ! command -v code &> /dev/null; then
     exit 1
 fi
 
+# Check for required tools
+if ! command -v git &> /dev/null; then
+    echo "❌ Git not found. Please install Git first."
+    exit 1
+fi
+
 # Create temporary directory
 TEMP_DIR=$(mktemp -d)
 cd "$TEMP_DIR" || exit 1
 
-# Get latest release URL
-echo "📥 Downloading the latest release..."
-REPO_URL="https://github.com/aliv029bmj/codemate"
-LATEST_VSIX_URL="${REPO_URL}/raw/main/code566-0.2.0.vsix"
+echo "📥 Cloning repository..."
+git clone https://github.com/aliv029bmj/codemate.git
+cd codemate || exit 1
 
-# Download VSIX
-if command -v curl &> /dev/null; then
-    curl -L -o code566.vsix "$LATEST_VSIX_URL"
-elif command -v wget &> /dev/null; then
-    wget -O code566.vsix "$LATEST_VSIX_URL"
+# Option 1: If prebuilt VSIX is available in the repository
+if [ -f code566-*.vsix ]; then
+    echo "✅ Found prebuilt VSIX package."
+    VSIX_FILE=$(ls code566-*.vsix | head -1)
 else
-    echo "❌ Neither curl nor wget found. Please install one of them."
-    exit 1
-fi
-
-# Check if download was successful
-if [ ! -f code566.vsix ]; then
-    echo "❌ Failed to download the extension package."
-    exit 1
+    # Option 2: Check if npm is available for building
+    if command -v npm &> /dev/null; then
+        echo "📦 Installing dependencies and building package..."
+        npm install
+        npm run compile
+        npm run package
+        
+        if [ -f code566-*.vsix ]; then
+            VSIX_FILE=$(ls code566-*.vsix | head -1)
+        else
+            echo "❌ Failed to build VSIX package."
+            exit 1
+        fi
+    else
+        echo "❌ Neither prebuilt VSIX found nor npm available to build it."
+        exit 1
+    fi
 fi
 
 # Install extension
 echo "🔌 Installing extension to VS Code..."
-code --install-extension code566.vsix
+echo "Using VSIX file: $VSIX_FILE"
+
+code --install-extension "$VSIX_FILE"
 
 if [ $? -eq 0 ]; then
     echo "✅ Installation complete! Restart VS Code and type 'Code566: Select Mode' in the command palette to start."
 else
     echo "❌ Failed to install the extension."
+    echo "Try installing manually: code --install-extension $TEMP_DIR/codemate/$VSIX_FILE"
     exit 1
 fi
 
