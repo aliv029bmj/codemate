@@ -9,6 +9,7 @@ export class ModeManager {
   private activeMode: IMode | undefined;
   private context: vscode.ExtensionContext;
   private modeCommands: Map<string, vscode.Disposable[]>;
+  private registeredCommandIds: Set<string>;
 
   /**
    * Creates a new ModeManager
@@ -18,6 +19,7 @@ export class ModeManager {
     this.modes = new Map<string, IMode>();
     this.context = context;
     this.modeCommands = new Map<string, vscode.Disposable[]>();
+    this.registeredCommandIds = new Set<string>();
   }
 
   /**

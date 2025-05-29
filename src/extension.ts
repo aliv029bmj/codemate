@@ -17,6 +17,9 @@ let modeManager: ModeManager;
 // Status bar item for mode selector
 let modeStatusBarItem: vscode.StatusBarItem;
 
+// Komut kayıtlarını kontrol etmek için
+const registeredCommandIds: Set<string> = new Set<string>();
+
 /**
  * Activate the extension
  * @param context The extension context
@@ -47,8 +50,33 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Export context for use in modes
   return {
-    getExtensionContext: () => extensionContext
+    getExtensionContext: () => extensionContext,
+    // Mod sınıflarının komut kaydetmek için kullanabilecekleri fonksiyon
+    registerCommand: (id: string, callback: (...args: any[]) => any): vscode.Disposable | undefined => {
+      return registerCommandSafely(id, callback, context);
+    }
   };
+}
+
+/**
+ * Bir komutu güvenli bir şekilde kaydeder (çakışmaları önlemek için)
+ * @param id Komut ID'si 
+ * @param callback Komut callback fonksiyonu
+ * @param context Extension context
+ * @returns Komut disposable nesnesi
+ */
+function registerCommandSafely(id: string, callback: (...args: any[]) => any, context: vscode.ExtensionContext): vscode.Disposable | undefined {
+  // Komut zaten kaydedilmiş mi kontrol et
+  if (registeredCommandIds.has(id)) {
+    console.log(`Komut zaten kayıtlı: ${id}`);
+    return undefined;
+  }
+
+  // Komutu kaydet
+  const command = vscode.commands.registerCommand(id, callback);
+  registeredCommandIds.add(id);
+  context.subscriptions.push(command);
+  return command;
 }
 
 /**
@@ -84,7 +112,7 @@ function registerModes() {
  */
 function registerCommands(context: vscode.ExtensionContext) {
   // Register the mode selection command
-  const selectModeCommand = vscode.commands.registerCommand('code566.selectMode', async () => {
+  registerCommandSafely('code566.selectMode', async () => {
     const modes = modeManager.getAllModes();
 
     // Create quick pick items for each mode
@@ -119,15 +147,12 @@ function registerCommands(context: vscode.ExtensionContext) {
         modeStatusBarItem.hide();
       }
     }
-  });
+  }, context);
 
   // Register a dedicated command to disable all modes
-  const disableModesCommand = vscode.commands.registerCommand('code566.disableAllModes', () => {
+  registerCommandSafely('code566.disableAllModes', () => {
     disableAllModes();
-  });
-
-  // Add commands to context subscriptions
-  context.subscriptions.push(selectModeCommand, disableModesCommand);
+  }, context);
 }
 
 /**
@@ -136,6 +161,18 @@ function registerCommands(context: vscode.ExtensionContext) {
 function disableAllModes() {
   // Use the ModeManager's dispose method to properly clean up
   modeManager.dispose();
+
+  // Komut kayıtlarını temizle
+  registeredCommandIds.clear();
+
+  // Temel komutları yeniden kaydet
+  registerCommandSafely('code566.selectMode', async () => {
+    // Komut içeriği
+  }, extensionContext);
+
+  registerCommandSafely('code566.disableAllModes', () => {
+    disableAllModes();
+  }, extensionContext);
 
   // Update global state to indicate no active mode
   extensionContext.globalState.update('code566.activeMode', null);

@@ -11,6 +11,7 @@ export class LineLengthWarningMode extends BaseMode {
   private detailStatusBar: vscode.StatusBarItem;
   private languageSettings: Map<string, number>;
   private activeDecorations: vscode.TextEditorDecorationType | undefined;
+  private subscriptions: vscode.Disposable[] = [];
 
   /**
    * Creates a new LineLengthWarningMode
@@ -90,6 +91,7 @@ export class LineLengthWarningMode extends BaseMode {
         this.update(position.line, position.character);
       }
     });
+    this.subscriptions.push(changeEditorSubscription);
 
     // Register document change event
     const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument((event) => {
@@ -98,6 +100,7 @@ export class LineLengthWarningMode extends BaseMode {
         this.updateLineDecorations(editor);
       }
     });
+    this.subscriptions.push(changeDocumentSubscription);
 
     // Register selection change event
     const changeSelectionSubscription = vscode.window.onDidChangeTextEditorSelection((event) => {
@@ -106,11 +109,7 @@ export class LineLengthWarningMode extends BaseMode {
         this.update(position.line, position.character);
       }
     });
-
-    // Register command to configure line length settings
-    const configureCommand = vscode.commands.registerCommand('code566.configureLineLength', async () => {
-      await this.configureSettings();
-    });
+    this.subscriptions.push(changeSelectionSubscription);
 
     // Override status bar command
     this.statusBarItem.command = 'code566.configureLineLength';
@@ -118,14 +117,32 @@ export class LineLengthWarningMode extends BaseMode {
     this.detailStatusBar.command = 'code566.configureLineLength';
     this.detailStatusBar.tooltip = 'Configure line length settings';
 
-    // Add subscriptions to context
-    context.subscriptions.push(
-      changeEditorSubscription,
-      changeDocumentSubscription,
-      changeSelectionSubscription,
-      configureCommand,
-      this.detailStatusBar
-    );
+    // Add detail status bar to context
+    context.subscriptions.push(this.detailStatusBar);
+
+    // Extension API kullanarak komut kaydı
+    const extension = vscode.extensions.getExtension('code566');
+    if (extension && extension.exports && extension.exports.registerCommand) {
+      const configureCommand = extension.exports.registerCommand('code566.configureLineLength', async () => {
+        await this.configureSettings();
+      });
+      if (configureCommand) {
+        this.subscriptions.push(configureCommand);
+      }
+    } else {
+      // Fallback olarak doğrudan context'e ekleyerek kayıt
+      // NOT: Bu yol, komut çakışmalarına yol açabilir
+      console.warn('Extension API bulunamadı, doğrudan context.subscriptions kullanılıyor');
+      try {
+        const configureCommand = vscode.commands.registerCommand('code566.configureLineLength', async () => {
+          await this.configureSettings();
+        });
+        context.subscriptions.push(configureCommand);
+        this.subscriptions.push(configureCommand);
+      } catch (error) {
+        console.error('Komut kaydı sırasında hata oluştu:', error);
+      }
+    }
 
     // Initialize decorations for current editor
     const editor = vscode.window.activeTextEditor;
@@ -283,20 +300,21 @@ export class LineLengthWarningMode extends BaseMode {
   }
 
   /**
-   * Deactivates the line length warning mode
+   * Deactivates the mode
    */
   public deactivate(): void {
     super.deactivate();
 
-    // Hide status bar item
+    // Dispose all subscriptions
+    this.subscriptions.forEach(subscription => subscription.dispose());
+    this.subscriptions = [];
+
+    // Hide detail status bar
     this.detailStatusBar.hide();
 
-    // Clear decorations
-    const editor = vscode.window.activeTextEditor;
-    if (editor) {
-      for (const decoration of this.lineDecorations) {
-        editor.setDecorations(decoration, []);
-      }
-    }
+    // Dispose decorations
+    this.lineDecorations.forEach(decoration => {
+      decoration.dispose();
+    });
   }
 } 

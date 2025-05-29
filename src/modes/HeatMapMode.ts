@@ -11,6 +11,7 @@ export class HeatMapMode extends BaseMode {
   private maxEditCount: number;
   private lastUpdate: number;
   private updateInterval: number;
+  private subscriptions: vscode.Disposable[] = [];
 
   /**
    * Creates a new HeatMapMode
@@ -39,6 +40,7 @@ export class HeatMapMode extends BaseMode {
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((event) => {
       this.trackDocumentChanges(event);
     });
+    this.subscriptions.push(changeSubscription);
 
     // Register selection change event to track cursor movement
     const selectionSubscription = vscode.window.onDidChangeTextEditorSelection((event) => {
@@ -47,17 +49,34 @@ export class HeatMapMode extends BaseMode {
         this.update(position.line, position.character);
       }
     });
-
-    // Register command to toggle heat map
-    const toggleCommand = vscode.commands.registerCommand('code566.toggleHeatMap', () => {
-      this.toggleHeatMap();
-    });
+    this.subscriptions.push(selectionSubscription);
 
     // Override status bar command
     this.statusBarItem.command = 'code566.toggleHeatMap';
 
-    // Add subscriptions to context
-    context.subscriptions.push(changeSubscription, selectionSubscription, toggleCommand);
+    // Extension API kullanarak komut kaydı
+    const extension = vscode.extensions.getExtension('code566');
+    if (extension && extension.exports && extension.exports.registerCommand) {
+      const toggleCommand = extension.exports.registerCommand('code566.toggleHeatMap', () => {
+        this.toggleHeatMap();
+      });
+      if (toggleCommand) {
+        this.subscriptions.push(toggleCommand);
+      }
+    } else {
+      // Fallback olarak doğrudan context'e ekleyerek kayıt
+      // NOT: Bu yol, komut çakışmalarına yol açabilir
+      console.warn('Extension API bulunamadı, doğrudan context.subscriptions kullanılıyor');
+      try {
+        const toggleCommand = vscode.commands.registerCommand('code566.toggleHeatMap', () => {
+          this.toggleHeatMap();
+        });
+        context.subscriptions.push(toggleCommand);
+        this.subscriptions.push(toggleCommand);
+      } catch (error) {
+        console.error('Komut kaydı sırasında hata oluştu:', error);
+      }
+    }
 
     // Initialize heat map for current document
     this.initializeHeatMap();
@@ -356,7 +375,11 @@ export class HeatMapMode extends BaseMode {
   public deactivate(): void {
     super.deactivate();
 
-    // Dispose of the webview panel if it exists
+    // Dispose all subscriptions
+    this.subscriptions.forEach(subscription => subscription.dispose());
+    this.subscriptions = [];
+
+    // Close heat map panel if open
     if (this.webviewPanel) {
       this.webviewPanel.dispose();
       this.webviewPanel = undefined;

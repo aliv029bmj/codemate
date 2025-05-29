@@ -12,6 +12,7 @@ export class StatsHUDMode extends BaseMode {
   private typedCharactersBuffer: number;
   private isHUDVisible: boolean;
   private statsPanel: vscode.WebviewPanel | undefined;
+  private subscriptions: vscode.Disposable[] = [];
 
   /**
    * Creates a new StatsHUDMode
@@ -41,23 +42,40 @@ export class StatsHUDMode extends BaseMode {
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((event) => {
       this.handleDocumentChange(event);
     });
-
-    // Register command to toggle the stats panel
-    const toggleCommand = vscode.commands.registerCommand('code566.toggleStats', () => {
-      this.toggleStatsHUD(context);
-    });
+    this.subscriptions.push(changeSubscription);
 
     // Update the stats for the current active document
     this.updateDocumentStats();
-
-    // Add subscriptions to context
-    context.subscriptions.push(changeSubscription, toggleCommand);
 
     // Override the default status bar command
     this.statusBarItem.command = 'code566.toggleStats';
 
     // Update the status bar
     this.updateStatusBar();
+
+    // Extension API kullanarak komut kaydı
+    const extension = vscode.extensions.getExtension('code566');
+    if (extension && extension.exports && extension.exports.registerCommand) {
+      const toggleCommand = extension.exports.registerCommand('code566.toggleStats', () => {
+        this.toggleStatsHUD(context);
+      });
+      if (toggleCommand) {
+        this.subscriptions.push(toggleCommand);
+      }
+    } else {
+      // Fallback olarak doğrudan context'e ekleyerek kayıt
+      // NOT: Bu yol, komut çakışmalarına yol açabilir
+      console.warn('Extension API bulunamadı, doğrudan context.subscriptions kullanılıyor');
+      try {
+        const toggleCommand = vscode.commands.registerCommand('code566.toggleStats', () => {
+          this.toggleStatsHUD(context);
+        });
+        context.subscriptions.push(toggleCommand);
+        this.subscriptions.push(toggleCommand);
+      } catch (error) {
+        console.error('Komut kaydı sırasında hata oluştu:', error);
+      }
+    }
   }
 
   /**
@@ -320,9 +338,14 @@ export class StatsHUDMode extends BaseMode {
   public deactivate(): void {
     super.deactivate();
 
-    // Clean up HUD if it's visible
+    // Dispose all subscriptions
+    this.subscriptions.forEach(subscription => subscription.dispose());
+    this.subscriptions = [];
+
+    // Close stats panel if open
     if (this.statsPanel) {
       this.statsPanel.dispose();
+      this.statsPanel = undefined;
       this.isHUDVisible = false;
     }
   }
