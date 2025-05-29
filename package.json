@@ -1,6 +1,6 @@
 {
-  "name": "codemate",
-  "displayName": "CodeMate",
+  "name": "code566",
+  "displayName": "Code566",
   "description": "Enhances the standard line/column display with fun user modes",
   "version": "0.1.0",
   "engines": {
@@ -16,21 +16,28 @@
   "contributes": {
     "commands": [
       {
-        "command": "codemate.selectMode",
-        "title": "CodeMate: Select Mode"
+        "command": "code566.selectMode",
+        "title": "Code566: Select Mode"
       },
       {
-        "command": "codemate.toggleStats",
-        "title": "CodeMate: Toggle Stats HUD"
+        "command": "code566.toggleStats",
+        "title": "Code566: Toggle Stats HUD"
       }
     ],
     "configuration": {
-      "title": "CodeMate",
+      "title": "Code566",
       "properties": {
-        "codemate.activeMode": {
+        "code566.activeMode": {
           "type": "string",
           "default": "story",
-          "enum": ["story", "pixelpet", "music", "riddle", "travel", "stats"],
+          "enum": [
+            "story",
+            "pixelpet",
+            "music",
+            "riddle",
+            "travel",
+            "stats"
+          ],
           "enumDescriptions": [
             "Display a tiny part of a story on every line/column move",
             "Show a virtual pet that reacts to coding behavior",
@@ -39,7 +46,7 @@
             "Virtually travel to a new city based on line/column",
             "Show a stats dashboard with useful real-time info"
           ],
-          "description": "The active mode for CodeMate"
+          "description": "The active mode for Code566"
         }
       }
     }
@@ -61,7 +68,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/aliv029bmj/codemate.git"
+    "url": "https://github.com/aliv029bmj/code566.git"
   },
   "publisher": "aliv029bmj",
   "license": "MIT"

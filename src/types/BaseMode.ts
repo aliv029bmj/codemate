@@ -2,49 +2,58 @@ import * as vscode from 'vscode';
 import { IMode } from './IMode';
 
 /**
- * Base class for all modes that implements the IMode interface
+ * Base class for all modes
  */
 export abstract class BaseMode implements IMode {
-  public name: string;
-  public id: string;
-  public statusBarItem: vscode.StatusBarItem;
-  
+  public readonly name: string;
+  public readonly id: string;
+  public statusBarItem!: vscode.StatusBarItem;
+
   /**
-   * Creates a new BaseMode
-   * @param name The display name of the mode
-   * @param id The unique identifier for the mode
-   * @param priority The priority of the mode in the status bar (higher = more to the left)
+   * Constructor for BaseMode
+   * @param name Display name for the mode
+   * @param id Unique identifier for the mode
+   * @param priority Status bar priority (higher value = further right)
    */
-  constructor(name: string, id: string, priority: number = 100) {
+  constructor(name: string, id: string, priority: number) {
     this.name = name;
     this.id = id;
-    this.statusBarItem = vscode.window.createStatusBarItem(
-      vscode.StatusBarAlignment.Right,
-      priority
-    );
-    this.statusBarItem.command = 'codemate.selectMode';
+    this.createStatusBarItem(priority);
   }
-  
+
   /**
    * Activates the mode
-   * @param context The extension context
+   * @param context Extension context
    */
   public activate(context: vscode.ExtensionContext): void {
+    // Show the status bar item
     this.statusBarItem.show();
   }
-  
+
   /**
    * Deactivates the mode
    */
   public deactivate(): void {
+    // Hide the status bar item
     this.statusBarItem.hide();
   }
-  
+
   /**
-   * Updates the mode display based on cursor position
-   * Must be implemented by derived classes
+   * Updates the mode based on cursor position
    * @param line Current line number
    * @param column Current column number
    */
   public abstract update(line: number, column: number): void;
+
+  /**
+   * Creates the status bar item for this mode
+   * @param priority Priority position (higher = more right)
+   */
+  protected createStatusBarItem(priority: number): void {
+    this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, priority);
+    this.statusBarItem.text = this.name;
+    this.statusBarItem.tooltip = `${this.name} - Click to change mode`;
+    this.statusBarItem.command = 'code566.selectMode';
+    this.statusBarItem.show();
+  }
 }

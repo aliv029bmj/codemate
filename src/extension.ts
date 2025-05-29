@@ -55,7 +55,7 @@ function registerModes() {
  */
 function registerCommands(context: vscode.ExtensionContext) {
   // Register the mode selection command
-  const selectModeCommand = vscode.commands.registerCommand('codemate.selectMode', async () => {
+  const selectModeCommand = vscode.commands.registerCommand('code566.selectMode', async () => {
     const modes = modeManager.getAllModes();
 
     // Create quick pick items for each mode
@@ -67,7 +67,7 @@ function registerCommands(context: vscode.ExtensionContext) {
 
     // Show quick pick to select mode
     const selectedItem = await vscode.window.showQuickPick(items, {
-      placeHolder: 'Select a CodeMate mode'
+      placeHolder: 'Select a Code566 mode'
     });
 
     // Activate selected mode
@@ -103,7 +103,7 @@ function setupCursorListener(context: vscode.ExtensionContext) {
  */
 function activateLastOrDefaultMode() {
   // Get last active mode from global state or use default
-  const lastModeId = extensionContext.globalState.get<string>('codemate.activeMode', 'pixelpet');
+  const lastModeId = extensionContext.globalState.get<string>('code566.activeMode', 'pixelpet');
 
   // Activate the mode
   if (!modeManager.activateMode(lastModeId)) {

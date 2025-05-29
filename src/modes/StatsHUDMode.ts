@@ -12,54 +12,54 @@ export class StatsHUDMode extends BaseMode {
   private typedCharactersBuffer: number;
   private isHUDVisible: boolean;
   private statsPanel: vscode.WebviewPanel | undefined;
-  
+
   /**
    * Creates a new StatsHUDMode
    */
   constructor() {
     super('Stats HUD', 'stats', 100);
-    
+
     this.totalLines = 0;
     this.totalCharacters = 0;
     this.typingSpeed = 0;
     this.lastTypingTime = Date.now();
     this.typedCharactersBuffer = 0;
     this.isHUDVisible = false;
-    
+
     // Set initial status bar display
     this.updateStatusBar();
   }
-  
+
   /**
-   * Activates the StatsHUDMode
-   * @param context The extension context
+   * Activates the StatsHUD mode
+   * @param context Extension context
    */
   public activate(context: vscode.ExtensionContext): void {
     super.activate(context);
-    
+
     // Register change event to track typing
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((event) => {
       this.handleDocumentChange(event);
     });
-    
-    // Register the toggle stats command
-    const toggleCommand = vscode.commands.registerCommand('codemate.toggleStats', () => {
+
+    // Register command to toggle the stats panel
+    const toggleCommand = vscode.commands.registerCommand('code566.toggleStats', () => {
       this.toggleStatsHUD(context);
     });
-    
+
     // Update the stats for the current active document
     this.updateDocumentStats();
-    
+
     // Add subscriptions to context
     context.subscriptions.push(changeSubscription, toggleCommand);
-    
-    // Set command in status bar
-    this.statusBarItem.command = 'codemate.toggleStats';
-    
+
+    // Override the default status bar command
+    this.statusBarItem.command = 'code566.toggleStats';
+
     // Update the status bar
     this.updateStatusBar();
   }
-  
+
   /**
    * Updates the stats based on cursor position
    * @param line Current line number
@@ -68,13 +68,13 @@ export class StatsHUDMode extends BaseMode {
   public update(line: number, column: number): void {
     // Update the status bar with cursor position info
     this.updateStatusBar();
-    
+
     // Update the HUD if it's visible
     if (this.isHUDVisible && this.statsPanel) {
       this.updateStatsHUD();
     }
   }
-  
+
   /**
    * Handles document changes to track typing statistics
    * @param event The text document change event
@@ -82,25 +82,25 @@ export class StatsHUDMode extends BaseMode {
   private handleDocumentChange(event: vscode.TextDocumentChangeEvent): void {
     // Calculate characters added/removed
     let charsDelta = 0;
-    
+
     for (const change of event.contentChanges) {
       charsDelta += change.text.length - change.rangeLength;
     }
-    
+
     // Update total characters
     this.totalCharacters += charsDelta;
-    
+
     // Update typing speed
     if (charsDelta > 0) {
       const now = Date.now();
       const timeDiff = (now - this.lastTypingTime) / 1000; // in seconds
-      
+
       if (timeDiff < 5) { // Only count if typing continuously
         this.typedCharactersBuffer += charsDelta;
       } else {
         this.typedCharactersBuffer = charsDelta;
       }
-      
+
       // Update speed every second
       if (timeDiff >= 1) {
         this.typingSpeed = Math.round((this.typedCharactersBuffer / timeDiff) * 60); // chars per minute
@@ -108,19 +108,19 @@ export class StatsHUDMode extends BaseMode {
         this.typedCharactersBuffer = 0;
       }
     }
-    
+
     // Update document stats
     this.updateDocumentStats();
-    
+
     // Update the status bar
     this.updateStatusBar();
-    
+
     // Update the HUD if it's visible
     if (this.isHUDVisible && this.statsPanel) {
       this.updateStatsHUD();
     }
   }
-  
+
   /**
    * Updates statistics for the current document
    */
@@ -129,16 +129,16 @@ export class StatsHUDMode extends BaseMode {
     if (!editor) {
       return;
     }
-    
+
     // Count lines in document
     this.totalLines = editor.document.lineCount;
-    
+
     // If characters haven't been counted yet, count them
     if (this.totalCharacters === 0) {
       this.totalCharacters = editor.document.getText().length;
     }
   }
-  
+
   /**
    * Updates the status bar with current stats
    */
@@ -148,14 +148,14 @@ export class StatsHUDMode extends BaseMode {
       this.statusBarItem.text = '$(graph) Stats: No editor';
       return;
     }
-    
+
     // Get current position
     const position = editor.selection.active;
-    
+
     // Update the status bar
     this.statusBarItem.text = `$(graph) Ln ${position.line + 1}, Col ${position.character + 1} | ${this.typingSpeed} CPM`;
   }
-  
+
   /**
    * Toggles the stats HUD webview panel
    */
@@ -166,28 +166,28 @@ export class StatsHUDMode extends BaseMode {
     } else {
       // Create and show the webview
       this.statsPanel = vscode.window.createWebviewPanel(
-        'codeMateStats',
-        'CodeMate Stats',
+        'statsHUD',
+        'Code566 Stats',
         vscode.ViewColumn.Beside,
         {
           enableScripts: true,
           retainContextWhenHidden: true
         }
       );
-      
+
       // Set initial content
       this.updateStatsHUD();
-      
+
       // Handle panel close
       this.statsPanel.onDidDispose(() => {
         this.isHUDVisible = false;
         this.statsPanel = undefined;
       });
-      
+
       this.isHUDVisible = true;
     }
   }
-  
+
   /**
    * Updates the stats HUD webview panel content
    */
@@ -195,73 +195,90 @@ export class StatsHUDMode extends BaseMode {
     if (!this.statsPanel) {
       return;
     }
-    
+
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
       return;
     }
-    
+
     // Get current position
     const position = editor.selection.active;
-    
+
     // Count functions (simple approximation)
     const docText = editor.document.getText();
     const functionMatches = docText.match(/function\s+\w+\s*\(/g);
     const functionCount = functionMatches ? functionMatches.length : 0;
-    
+
     // Generate HTML content
-    this.statsPanel.webview.html = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>CodeMate Stats</title>
-        <style>
-          body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-            color: var(--vscode-foreground);
-            background-color: var(--vscode-editor-background);
-          }
-          .stat-card {
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 5px;
-            background-color: var(--vscode-editor-inactiveSelectionBackground);
-          }
-          .stat-title {
-            font-size: 14px;
-            margin-bottom: 5px;
-            opacity: 0.8;
-          }
-          .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-          }
-          .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-          }
-          h1 {
-            margin-bottom: 20px;
-            font-size: 18px;
-            border-bottom: 1px solid var(--vscode-panel-border);
-            padding-bottom: 10px;
-          }
-          .position-display {
-            font-size: 16px;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: var(--vscode-editor-lineHighlightBackground);
-            border-radius: 3px;
-          }
-        </style>
-      </head>
-      <body>
-        <h1>CodeMate Stats Dashboard</h1>
+    this.statsPanel.webview.html = this.getHtmlContent();
+  }
+
+  private getHtmlContent(): string {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      return `<!DOCTYPE html><html><body><h1>No active editor</h1></body></html>`;
+    }
+
+    // Get current position
+    const position = editor.selection.active;
+
+    // Count functions (simple approximation)
+    const docText = editor.document.getText();
+    const functionMatches = docText.match(/function\s+\w+\s*\(/g);
+    const functionCount = functionMatches ? functionMatches.length : 0;
+
+    return `<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Code566 Stats</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          padding: 20px;
+          color: var(--vscode-foreground);
+          background-color: var(--vscode-editor-background);
+        }
+        .stat-card {
+          margin-bottom: 15px;
+          padding: 15px;
+          border-radius: 5px;
+          background-color: var(--vscode-editor-inactiveSelectionBackground);
+        }
+        .stat-title {
+          font-size: 14px;
+          margin-bottom: 5px;
+          opacity: 0.8;
+        }
+        .stat-value {
+          font-size: 24px;
+          font-weight: bold;
+        }
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 15px;
+          margin-top: 20px;
+        }
+        h1 {
+          margin-bottom: 20px;
+          font-size: 18px;
+          border-bottom: 1px solid var(--vscode-panel-border);
+          padding-bottom: 10px;
+        }
+        .position-display {
+          font-size: 16px;
+          margin-bottom: 20px;
+          padding: 10px;
+          background-color: var(--vscode-editor-lineHighlightBackground);
+          border-radius: 3px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Code566 Stats Dashboard</h1>
         
         <div class="position-display">
           <strong>Current Position:</strong> Line ${position.line + 1}, Column ${position.character + 1}
@@ -288,17 +305,17 @@ export class StatsHUDMode extends BaseMode {
             <div class="stat-value">${functionCount}</div>
           </div>
         </div>
-      </body>
-      </html>
-    `;
+      </div>
+    </body>
+    </html>`;
   }
-  
+
   /**
    * Deactivates the mode
    */
   public deactivate(): void {
     super.deactivate();
-    
+
     // Clean up HUD if it's visible
     if (this.statsPanel) {
       this.statsPanel.dispose();

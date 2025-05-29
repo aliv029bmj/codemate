@@ -1,56 +1,54 @@
-# CodeMate
+# Code566
 
-**CodeMate** transforms your VS Code line/column indicator into a fun, interactive experience with selectable user modes. Make your coding sessions more engaging and enjoyable!
+## Overview
+**Code566** transforms your VS Code line/column indicator into a fun, interactive experience with selectable user modes. Make your coding sessions more engaging and enjoyable!
 
 ## Features
+Code566 enhances your coding experience by replacing the standard line/column display with one of six interactive modes:
 
-CodeMate enhances your coding experience by replacing the standard line/column display with one of six interactive modes:
+1. **Pixel Pet Mode** - A virtual pet that reacts to your coding behavior, gaining experience and energy based on your typing patterns.
 
-### 1. Story Mode
-Read a progressive story that changes as you navigate through your code. Each line jump reveals the next part of the tale.
+2. **Travel Mode** - Virtually travel to different cities around the world based on your cursor position, with distance tracking and city information.
 
-### 2. Pixel Pet
-Adopt a virtual pet that reacts to your coding behavior. Keep coding to level up your pet and keep it happy!
+3. **Stats HUD Mode** - Displays a comprehensive dashboard of coding statistics including typing speed, character count, and line information.
 
-### 3. Music By Code
-Generate ambient music based on your cursor movements. Different lines produce different notes, and columns affect volume.
+## Installation
 
-### 4. Riddle Mode
-Challenge yourself with riddles that change as you navigate through your code. Click on the riddle to toggle the answer.
+### Via VS Code Marketplace
+1. Open VS Code
+2. Click the Extensions view icon in the Sidebar or press `Ctrl+Shift+X`
+3. Search for "Code566"
+4. Click Install
 
-### 5. Travel Mode
-Virtually travel to different cities around the world as you navigate through your code. The further you move, the further you travel!
-
-### 6. Stats HUD
-Get real-time coding statistics including character count, lines, functions, and typing speed. Toggle a detailed dashboard view for more info.
+### Via Direct Download
+1. Download the latest `.vsix` file from the [Releases](https://github.com/aliv029bmj/code566/releases) page
+2. In VS Code, from the Extensions view (Ctrl+Shift+X), click "..." at the top
+3. Select "Install from VSIX..."
+4. Choose the downloaded file
 
 ## Usage
 
-1. Install the extension
-2. Choose your preferred mode via:
-   - Command Palette: `CodeMate: Select Mode`
-   - Status bar: Click on the CodeMate indicator
-3. Watch your status bar transform into something more interesting than just line and column numbers!
+### Selecting a Mode
+You can select your preferred mode in three ways:
+- Command Palette: `Code566: Select Mode`
+- Status bar: Click on the Code566 indicator
+- Settings: Configure your preferred mode in settings
 
-## Extension Settings
+### Configuration
+The extension provides the following configuration options:
 
-* `codemate.activeMode`: Sets the active CodeMate mode (story, pixelpet, music, riddle, travel, stats)
+* `code566.activeMode`: Sets the active Code566 mode (pixelpet, travel, stats)
 
-## Commands
+### Commands
 
-* `codemate.selectMode`: Open the mode selector menu
-* `codemate.toggleStats`: Toggle the Stats HUD visibility (when in Stats mode)
+* `code566.selectMode`: Open the mode selector menu
+* `code566.toggleStats`: Toggle the Stats HUD visibility (when in Stats mode)
 
-## Notes
+## Troubleshooting
 
-* Your selected mode is persisted between VS Code sessions
-* All modes are designed to be non-intrusive and won't impact editor performance
-* Some modes (like Pixel Pet) respond to your coding activity and evolve over time
+If you encounter any issues:
+1. Make sure VS Code is up to date
+2. Right-click on Code566 in the Extensions panel and select "Extension Settings"
+3. Check the "Output" panel for activation errors
 
-## Contributing
-
-Contributions are welcome! Feel free to add new modes or enhance existing ones.
-
-## License
-
-MIT
+For help or more information, refer to the GitHub repository: https://github.com/aliv029bmj/code566

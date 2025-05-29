@@ -47,14 +47,14 @@ export class TravelMode extends BaseMode {
   public activate(context: vscode.ExtensionContext): void {
     super.activate(context);
 
-    // Load saved state if available
-    this.currentCityIndex = context.globalState.get('codemate.travel.lastCity', 0);
-    this.distanceTraveled = context.globalState.get('codemate.travel.distance', 0);
-    this.totalCitiesVisited = context.globalState.get('codemate.travel.citiesVisited', 1);
+    // Load previous travel state from global state
+    this.currentCityIndex = context.globalState.get('code566.travel.lastCity', 0);
+    this.distanceTraveled = context.globalState.get('code566.travel.distance', 0);
+    this.totalCitiesVisited = context.globalState.get('code566.travel.citiesVisited', 1);
 
-    // Load visited cities if available
-    const visitedCitiesArray = context.globalState.get<number[]>('codemate.travel.visitedCities', [0]);
-    this.visitedCityIndices = new Set<number>(visitedCitiesArray);
+    // Load visited cities
+    const visitedCitiesArray = context.globalState.get<number[]>('code566.travel.visitedCities', [0]);
+    this.visitedCityIndices = new Set(visitedCitiesArray);
 
     // Update the status bar
     this.updateStatusBar();
@@ -109,25 +109,24 @@ export class TravelMode extends BaseMode {
 
     // Show notification about the journey
     vscode.window.showInformationMessage(
-      `CodeMate Travel: You've journeyed from ${prevCity.name}, ${prevCity.country} ${prevCity.emoji} to ${newCity.name}, ${newCity.country} ${newCity.emoji}!
-       Distance: ${travelDistance} km | Total journey: ${formattedDistance}
-       Local language: ${newCity.language} | Local time: ${localTime}
-       About: ${newCity.description}
-       Total cities visited: ${this.totalCitiesVisited}/${this.cities.length}`
+      `Code566 Travel: You've journeyed from ${prevCity.name}, ${prevCity.country} ${prevCity.emoji} to ${newCity.name}, ${newCity.country} ${newCity.emoji}!
+      • Distance: ${travelDistance.toFixed(1)}km
+      • Total Distance: ${this.distanceTraveled.toFixed(1)}km
+      • Cities Visited: ${this.totalCitiesVisited}/${this.cities.length}`
     );
 
     // Update current city index
     this.currentCityIndex = newCityIndex;
 
     // Save current state to extension context
-    if (vscode.extensions.getExtension('codemate')) {
-      const extension = vscode.extensions.getExtension('codemate');
+    if (vscode.extensions.getExtension('code566')) {
+      const extension = vscode.extensions.getExtension('code566');
       if (extension && extension.isActive) {
         const context = extension.exports.getExtensionContext();
-        context.globalState.update('codemate.travel.lastCity', this.currentCityIndex);
-        context.globalState.update('codemate.travel.distance', this.distanceTraveled);
-        context.globalState.update('codemate.travel.citiesVisited', this.totalCitiesVisited);
-        context.globalState.update('codemate.travel.visitedCities', Array.from(this.visitedCityIndices));
+        context.globalState.update('code566.travel.lastCity', this.currentCityIndex);
+        context.globalState.update('code566.travel.distance', this.distanceTraveled);
+        context.globalState.update('code566.travel.citiesVisited', this.totalCitiesVisited);
+        context.globalState.update('code566.travel.visitedCities', Array.from(this.visitedCityIndices));
       }
     }
 
@@ -197,9 +196,21 @@ Cities visited: ${this.totalCitiesVisited}/${this.cities.length}`;
   }
 
   /**
-   * Deactivates the mode
+   * Deactivates the mode and saves the state
    */
   public deactivate(): void {
     super.deactivate();
+
+    // Save state when deactivated
+    if (vscode.extensions.getExtension('code566')) {
+      const extension = vscode.extensions.getExtension('code566');
+      if (extension && extension.isActive) {
+        const context = extension.exports.getExtensionContext();
+        context.globalState.update('code566.travel.lastCity', this.currentCityIndex);
+        context.globalState.update('code566.travel.distance', this.distanceTraveled);
+        context.globalState.update('code566.travel.citiesVisited', this.totalCitiesVisited);
+        context.globalState.update('code566.travel.visitedCities', Array.from(this.visitedCityIndices));
+      }
+    }
   }
 }

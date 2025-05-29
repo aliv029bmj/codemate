@@ -8,7 +8,7 @@ export class ModeManager {
   private modes: Map<string, IMode>;
   private activeMode: IMode | undefined;
   private context: vscode.ExtensionContext;
-  
+
   /**
    * Creates a new ModeManager
    * @param context The extension context
@@ -17,7 +17,7 @@ export class ModeManager {
     this.modes = new Map<string, IMode>();
     this.context = context;
   }
-  
+
   /**
    * Registers a mode with the manager
    * @param mode The mode to register
@@ -25,7 +25,7 @@ export class ModeManager {
   public registerMode(mode: IMode): void {
     this.modes.set(mode.id, mode);
   }
-  
+
   /**
    * Activates a mode by ID
    * @param modeId The ID of the mode to activate
@@ -36,21 +36,21 @@ export class ModeManager {
     if (this.activeMode) {
       this.activeMode.deactivate();
     }
-    
+
     const mode = this.modes.get(modeId);
     if (!mode) {
       return false;
     }
-    
+
     mode.activate(this.context);
     this.activeMode = mode;
-    
+
     // Save the active mode to global state
-    this.context.globalState.update('codemate.activeMode', modeId);
-    
+    this.context.globalState.update('code566.activeMode', modeId);
+
     return true;
   }
-  
+
   /**
    * Gets the active mode
    * @returns The currently active mode or undefined if no mode is active
@@ -58,7 +58,7 @@ export class ModeManager {
   public getActiveMode(): IMode | undefined {
     return this.activeMode;
   }
-  
+
   /**
    * Gets all registered modes
    * @returns An array of all registered modes
@@ -66,7 +66,7 @@ export class ModeManager {
   public getAllModes(): IMode[] {
     return Array.from(this.modes.values());
   }
-  
+
   /**
    * Updates the active mode with the current cursor position
    * @param line Current line number

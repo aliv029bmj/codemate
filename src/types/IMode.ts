@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 /**
- * Interface for all CodeMate modes
+ * Interface for all Code566 modes
  */
 export interface IMode {
   /**
@@ -18,18 +18,18 @@ export interface IMode {
    * The status bar item to display the mode information
    */
   statusBarItem: vscode.StatusBarItem;
-  
+
   /**
    * Activates the mode
    * @param context The extension context
    */
   activate(context: vscode.ExtensionContext): void;
-  
+
   /**
    * Deactivates the mode
    */
   deactivate(): void;
-  
+
   /**
    * Updates the mode display based on cursor position
    * @param line Current line number
