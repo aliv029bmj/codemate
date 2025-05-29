@@ -137,36 +137,8 @@ function registerCommands(context: vscode.ExtensionContext) {
     }
   });
 
-  // Register commands for specific modes
-  const toggleHeatMapCommand = vscode.commands.registerCommand('code566.toggleHeatMap', () => {
-    // This command is handled by the HeatMapMode class
-  });
-
-  const configureLineLengthCommand = vscode.commands.registerCommand('code566.configureLineLength', () => {
-    // This command is handled by the LineLengthWarningMode class
-  });
-
-  const toggleCodeFeatureCommand = vscode.commands.registerCommand('code566.toggleCodeFeature', () => {
-    // This command is handled by the CodeFeatureDetectorMode class
-  });
-
-  const showRecordsCommand = vscode.commands.registerCommand('code566.showRecords', () => {
-    // This command is handled by the LineColumnRecordsMode class
-  });
-
-  const resetRecordsCommand = vscode.commands.registerCommand('code566.resetRecords', () => {
-    // This command is handled by the LineColumnRecordsMode class
-  });
-
   // Add commands to context subscriptions
-  context.subscriptions.push(
-    selectModeCommand,
-    toggleHeatMapCommand,
-    configureLineLengthCommand,
-    toggleCodeFeatureCommand,
-    showRecordsCommand,
-    resetRecordsCommand
-  );
+  context.subscriptions.push(selectModeCommand);
 }
 
 /**
@@ -191,11 +163,8 @@ function setupCursorListener(context: vscode.ExtensionContext) {
  * Deactivate the extension
  */
 export function deactivate() {
-  // Deactivate current mode if there is one
-  const activeMode = modeManager.getActiveMode();
-  if (activeMode) {
-    activeMode.deactivate();
-  }
+  // Dispose of mode manager resources
+  modeManager.dispose();
 
   // Hide status bar items
   noModeStatusBarItem.hide();
