@@ -1,53 +1,54 @@
 #!/bin/bash
 
-# Code566 installation script
-echo "🚀 Starting Code566 Installation..."
+# Code566 Simple Installation Script
+echo "🚀 Starting Code566 Simple Installation..."
 
-# Check if VS Code is installed
+# Check for VS Code
 if ! command -v code &> /dev/null; then
-  echo "❌ VS Code is not installed or not in the PATH. Please install VS Code first."
-  exit 1
-fi
-
-# Navigate to a temporary directory
-cd "$(dirname "$0")" || exit 1
-
-# Check if the vsix file already exists
-if ls code566-*.vsix 1> /dev/null 2>&1; then
-  echo "✅ VSIX package already exists, skipping build step."
-else
-  # Check if npm is installed
-  if ! command -v npm &> /dev/null; then
-    echo "❌ npm is not installed. Please install Node.js and npm first."
+    echo "❌ VS Code not found. Please install VS Code first."
+    echo "Visit https://code.visualstudio.com/download for installation instructions."
     exit 1
-  fi
-
-  # Install dependencies and build package
-  echo "📦 Installing dependencies..."
-  npm install
-
-  echo "🔨 Building extension..."
-  npm run compile
-  npm run package
 fi
 
-# Install the extension
-echo "🔌 Installing extension..."
-VSIX_FILE=$(ls code566-*.vsix | sort -V | tail -n1)
-if [ -n "$VSIX_FILE" ]; then
-  code --install-extension "$VSIX_FILE"
-  echo "✅ Installation complete! Restart VS Code and type 'Code566: Select Mode' in the command palette to start."
+# Create temporary directory
+TEMP_DIR=$(mktemp -d)
+cd "$TEMP_DIR" || exit 1
+
+# Get latest release URL
+echo "📥 Downloading the latest release..."
+REPO_URL="https://github.com/aliv029bmj/codemate"
+LATEST_VSIX_URL="${REPO_URL}/raw/main/code566-0.2.0.vsix"
+
+# Download VSIX
+if command -v curl &> /dev/null; then
+    curl -L -o code566.vsix "$LATEST_VSIX_URL"
+elif command -v wget &> /dev/null; then
+    wget -O code566.vsix "$LATEST_VSIX_URL"
 else
-  echo "❌ Failed to find VSIX package."
-  exit 1
+    echo "❌ Neither curl nor wget found. Please install one of them."
+    exit 1
 fi
 
-# Installation successful, provide instructions for manual installation if needed
-if [ $? -ne 0 ]; then
-  echo "⚠️ Automatic installation failed. Please install manually:"
-  VSIX_FILE=$(ls code566-*.vsix | sort -V | tail -n1)
-  echo "1. Open VS Code"
-  echo "2. Press Ctrl+Shift+X to open Extensions view"
-  echo "3. Click ... (More Actions) and select 'Install from VSIX...'"
-  echo "4. Browse to and select: $(pwd)/$VSIX_FILE"
-fi 
+# Check if download was successful
+if [ ! -f code566.vsix ]; then
+    echo "❌ Failed to download the extension package."
+    exit 1
+fi
+
+# Install extension
+echo "🔌 Installing extension to VS Code..."
+code --install-extension code566.vsix
+
+if [ $? -eq 0 ]; then
+    echo "✅ Installation complete! Restart VS Code and type 'Code566: Select Mode' in the command palette to start."
+else
+    echo "❌ Failed to install the extension."
+    exit 1
+fi
+
+# Clean up
+echo "🧹 Cleaning up temporary files..."
+cd ~ || exit 1
+rm -rf "$TEMP_DIR"
+
+echo "🎉 Code566 successfully installed!" 
