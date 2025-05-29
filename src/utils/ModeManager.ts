@@ -190,5 +190,10 @@ export class ModeManager {
 
     // Clear active mode reference
     this.activeMode = undefined;
+
+    // Tüm modların status bar öğelerini gizle
+    this.modes.forEach(mode => {
+      mode.statusBarItem.hide();
+    });
   }
 }

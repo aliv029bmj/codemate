@@ -58,7 +58,7 @@ export abstract class BaseMode implements IMode {
     this.statusBarItem.tooltip = `${this.name} - Click to change mode`;
     this.statusBarItem.command = 'code566.selectMode';
 
-    // Don't show the status bar item by default
-    // It will only be shown when the mode is activated
+    // Başlangıçta gizli tutuyoruz, sadece etkinleştirildiğinde gösterilecek
+    this.statusBarItem.hide();
   }
 }

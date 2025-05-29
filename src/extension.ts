@@ -55,14 +55,27 @@ export function activate(context: vscode.ExtensionContext) {
  * Register all available modes
  */
 function registerModes() {
-  // Create and register all modes
-  modeManager.registerMode(new PixelPetMode());
-  modeManager.registerMode(new TravelMode());
-  modeManager.registerMode(new StatsHUDMode());
-  modeManager.registerMode(new HeatMapMode());
-  modeManager.registerMode(new LineLengthWarningMode());
-  modeManager.registerMode(new CodeFeatureDetectorMode());
-  modeManager.registerMode(new LineColumnRecordsMode());
+  // Create and register all modes - modların status bar öğeleri varsayılan olarak gizli olacak
+  const modes = [
+    new PixelPetMode(),
+    new TravelMode(),
+    new StatsHUDMode(),
+    new HeatMapMode(),
+    new LineLengthWarningMode(),
+    new CodeFeatureDetectorMode(),
+    new LineColumnRecordsMode()
+  ];
+
+  // Tüm modları kaydet ve status bar öğelerini gizle
+  modes.forEach(mode => {
+    // Kaydet
+    modeManager.registerMode(mode);
+
+    // Modun status bar öğesini gizle
+    if (mode.statusBarItem) {
+      mode.statusBarItem.hide();
+    }
+  });
 }
 
 /**
