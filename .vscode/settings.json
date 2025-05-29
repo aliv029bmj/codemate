@@ -16,10 +16,10 @@
     "**/node_modules": true,
     "**/dist": true
   },
-  "codemate.activeMode": "story",
+  "code566.activeMode": "story",
   "workbench.colorCustomizations": {
     "activityBar.background": "#2C313A",
     "titleBar.activeBackground": "#3E444F",
     "titleBar.activeForeground": "#F9FAFC"
   }
-} 
+}

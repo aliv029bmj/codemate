@@ -1,62 +1,58 @@
 @echo off
-echo 🚀 Starting CodeMate Installation...
+echo 🚀 Starting Code566 Installation...
 
-:: Check if npm exists
+:: Check if VS Code is installed
+where code >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo ❌ VS Code is not installed or not in the PATH. Please install VS Code first.
+    exit /b 1
+)
+
+:: Check if npm is installed
 where npm >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-  echo ❌ npm not found. Please install Node.js.
-  exit /b 1
+    echo ❌ npm is not installed. Please install Node.js and npm first.
+    exit /b 1
 )
 
-:: Check if VS Code CLI exists
-where code >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-  echo ⚠️ VS Code CLI not found. Automatic package installation will not be available.
-)
+:: Navigate to the script directory
+cd /d "%~dp0"
 
-:: Install dependencies
-echo 📦 Installing dependencies...
-call npm install
-
-:: Compile
-echo 🔨 Compiling code...
-call npm run compile
-
-:: Check if vsce exists
-where vsce >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-  echo 📥 vsce not installed, installing now...
-  call npm install -g @vscode/vsce
-)
-
-:: Create VSIX package
-echo 📦 Creating VSIX package...
-call vsce package
-
-:: Find the latest VSIX file
-for /f "tokens=*" %%a in ('dir /b codemate-*.vsix 2^>nul') do (
-  set VSIX_FILE=%%a
-)
-
-:: Install package if VS Code CLI is available
-where code >nul 2>&1
+:: Check if VSIX file already exists
+dir /b code566-*.vsix >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
-  if defined VSIX_FILE (
-    echo 🔌 Installing extension to VS Code: %VSIX_FILE%
-    call code --install-extension "%VSIX_FILE%"
-    echo ✅ Installation complete! Restart VS Code and type 'CodeMate: Select Mode' in the command palette to start.
-  ) else (
-    echo ❌ VSIX file not found.
-  )
+    echo ✅ VSIX package already exists, skipping build step.
 ) else (
-  if defined VSIX_FILE (
-    echo ⚠️ VS Code CLI not found. Please install this VSIX package manually: %VSIX_FILE%
-    echo 📝 To install, use the 'Install from VSIX...' option in the Extensions panel (...) menu in VS Code.
-  ) else (
-    echo ❌ VSIX file not found.
-  )
+    :: Install dependencies
+    echo 📦 Installing dependencies...
+    call npm install
+
+    :: Build extension
+    echo 🔨 Building extension...
+    call npm run compile
+    call npm run package
 )
 
-echo.
-echo Press any key to exit...
-pause >nul 
+:: Install the extension
+echo 🔌 Installing extension...
+for /f "tokens=*" %%a in ('dir /b code566-*.vsix 2^>nul') do (
+    set VSIX_FILE=%%a
+    echo Installing: %%a
+    call code --install-extension %%a
+    if %ERRORLEVEL% EQU 0 (
+        echo ✅ Installation complete! Restart VS Code and type 'Code566: Select Mode' in the command palette to start.
+    ) else (
+        echo ⚠️ Automatic installation failed. Please install manually:
+        echo 1. Open VS Code
+        echo 2. Press Ctrl+Shift+X to open Extensions view
+        echo 3. Click ... (More Actions) and select 'Install from VSIX...'
+        echo 4. Browse to and select: %CD%\%%a
+    )
+    goto :installed
+)
+
+echo ❌ No VSIX package found.
+exit /b 1
+
+:installed
+exit /b 0 

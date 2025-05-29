@@ -1,84 +1,90 @@
 #!/bin/bash
 
-echo "🚀 CodeMate VS Code Extension Automatic Installation"
-echo "==================================================="
+echo "🚀 Code566 VS Code Extension Automatic Installation"
+echo "=================================================="
+echo ""
 
-# Check required commands
-check_command() {
-  command -v $1 >/dev/null 2>&1 || { echo "❌ $1 not found. Please install $1."; exit 1; }
-}
-
-check_command git
-check_command npm
-check_command node
-
-# GitHub repo information
-REPO_URL="https://github.com/aliv029bmj/codemate.git"
-REPO_NAME="codemate"
-
-# Create installation folder in user's home directory
-INSTALL_DIR="$HOME/.codemate-install"
-mkdir -p $INSTALL_DIR
-
-echo "📥 Downloading latest code from GitHub..."
-if [ -d "$INSTALL_DIR/$REPO_NAME" ]; then
-  echo "ℹ️ Updating existing repository..."
-  cd "$INSTALL_DIR/$REPO_NAME"
-  git pull
-else
-  echo "ℹ️ Cloning repository..."
-  git clone $REPO_URL "$INSTALL_DIR/$REPO_NAME"
-  cd "$INSTALL_DIR/$REPO_NAME"
+# Check if curl or wget is installed
+if ! command -v curl &> /dev/null && ! command -v wget &> /dev/null; then
+    echo "❌ Error: Neither curl nor wget is installed. Please install one of these commands first."
+    exit 1
 fi
 
+# Check if git is installed
+if ! command -v git &> /dev/null; then
+    echo "❌ Error: Git is not installed. Please install git first."
+    exit 1
+fi
+
+# GitHub repository info
+REPO_URL="https://github.com/aliv029bmj/code566.git"
+REPO_NAME="code566"
+
+# Installation directory
+INSTALL_DIR="$HOME/.code566-install"
+
+# Create and navigate to the installation directory
+echo "📁 Creating installation directory..."
+mkdir -p "$INSTALL_DIR"
+cd "$INSTALL_DIR" || { echo "❌ Failed to create installation directory"; exit 1; }
+
+# Clone the repository
+echo "📥 Cloning repository from GitHub..."
+if [ -d "$REPO_NAME" ]; then
+    echo "📦 Repository already exists, updating..."
+    cd "$REPO_NAME" || { echo "❌ Failed to navigate to repository"; exit 1; }
+    git pull
+else
+    git clone "$REPO_URL" "$REPO_NAME"
+    cd "$REPO_NAME" || { echo "❌ Failed to navigate to repository"; exit 1; }
+fi
+
+# Install dependencies
 echo "📦 Installing dependencies..."
 npm install
 
-echo "🔨 Compiling code..."
+# Compile TypeScript code
+echo "🔨 Compiling TypeScript code..."
 npm run compile
 
-# Check and install vsce if needed
-if ! command -v vsce >/dev/null 2>&1; then
-  echo "📥 vsce not installed, installing now..."
-  npm install -g @vscode/vsce
-fi
-
+# Package the extension
 echo "📦 Creating VSIX package..."
-vsce package
+npm run package
 
-# Check if VS Code is available
-if command -v code >/dev/null 2>&1; then
-  VSIX_FILE=$(ls codemate-*.vsix | sort -V | tail -n1)
-  if [ -n "$VSIX_FILE" ]; then
-    echo "🔌 Installing extension to VS Code: $VSIX_FILE"
-    code --install-extension "$VSIX_FILE"
-    echo "✅ Installation complete! Restart VS Code and type 'CodeMate: Select Mode' in the command palette to start."
-    
-    # Cleanup
-    echo "🧹 Cleaning up temporary files..."
-    VSIX_PATH="$INSTALL_DIR/$REPO_NAME/$VSIX_FILE"
-    cp "$VSIX_FILE" "$HOME/$VSIX_FILE"
-    echo "📋 VSIX file copied to your home directory: $HOME/$VSIX_FILE"
-  else
-    echo "❌ Failed to create VSIX file."
-  fi
+# Install the extension in VS Code
+echo "🔌 Installing extension in VS Code..."
+VSIX_FILE=$(ls code566-*.vsix | sort -V | tail -n1)
+if [ -n "$VSIX_FILE" ]; then
+    code --install-extension "$VSIX_FILE" || { 
+        echo "❌ Failed to install extension. Trying manual installation..."; 
+        echo "💡 Please install the extension manually from: $INSTALL_DIR/$REPO_NAME/$VSIX_FILE"
+    }
+    echo "✅ Installation complete! Restart VS Code and type 'Code566: Select Mode' in the command palette to start."
 else
-  VSIX_FILE=$(ls codemate-*.vsix | sort -V | tail -n1)
-  if [ -n "$VSIX_FILE" ]; then
-    echo "⚠️ VS Code CLI not found. You'll need to install the VSIX package manually."
-    cp "$VSIX_FILE" "$HOME/$VSIX_FILE"
-    echo "📋 VSIX file copied to your home directory: $HOME/$VSIX_FILE"
-    echo "📝 To install, use the 'Install from VSIX...' option in the Extensions panel (...) menu in VS Code."
-  else
-    echo "❌ Failed to create VSIX file."
-  fi
+    echo "❌ No VSIX file found. Please try installing manually."
+    # Find any VSIX file in the directory
+    VSIX_FILE=$(ls code566-*.vsix 2>/dev/null)
+    if [ -n "$VSIX_FILE" ]; then
+        echo "💡 Please install the extension manually from: $INSTALL_DIR/$REPO_NAME/$VSIX_FILE"
+    else
+        echo "❌ No VSIX file found. Please try installing manually by building the extension first."
+    fi
 fi
 
+# Print installation summary
 echo "
-✨ CodeMate installation information:
----------------------------------
-🔹 Repository: $REPO_URL
-🔹 Installation folder: $INSTALL_DIR/$REPO_NAME
-🔹 VSIX file: $HOME/$VSIX_FILE
-🔹 Command Palette: 'CodeMate: Select Mode'
-" 
+✨ Code566 installation information:
+----------------------------------
+🔹 Installation directory: $INSTALL_DIR/$REPO_NAME
+🔹 VSIX package: $VSIX_FILE
+🔹 Command Palette: 'Code566: Select Mode'
+"
+
+# Check for errors
+if [ -z "$VSIX_FILE" ]; then
+    echo "❌ Warning: Installation might not be complete. Try running the installation manually."
+    exit 1
+fi
+
+echo "🎉 Done! Enjoy Code566 in VS Code!"
+exit 0 
