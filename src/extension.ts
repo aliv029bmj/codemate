@@ -113,33 +113,55 @@ function registerModes() {
 function registerCommands(context: vscode.ExtensionContext) {
   // Register the mode selection command
   registerCommandSafely('code566.selectMode', async () => {
+    const activeMode = modeManager.getActiveMode();
     const modes = modeManager.getAllModes();
 
     // Create quick pick items for each mode
-    const items = modes.map(mode => ({
-      label: mode.name,
-      description: mode.description || '',
-      id: mode.id
-    }));
+    const items = modes.map(mode => {
+      // Aktif mod işaretlenir
+      const isActive = activeMode && activeMode.id === mode.id;
+      return {
+        label: `${isActive ? '$(check) ' : ''}${mode.name}`,
+        description: mode.description || '',
+        id: mode.id,
+        isActive: isActive
+      };
+    });
 
     // Add option to disable all modes
     items.push({
       label: 'Disable All Modes',
       description: 'Turn off Code566 enhancement',
-      id: 'none'
+      id: 'none',
+      isActive: activeMode === undefined
     });
 
     // Show quick pick to select mode
     const selectedItem = await vscode.window.showQuickPick(items, {
-      placeHolder: 'Select a Code566 mode'
+      placeHolder: activeMode
+        ? `Current mode: ${activeMode.name} - Select to change`
+        : 'Select a Code566 mode'
     });
 
     // Handle mode selection
     if (selectedItem) {
+      // Eğer zaten aktif olan mod seçilirse, kullanıcıyı bilgilendir
+      if (selectedItem.isActive) {
+        vscode.window.showInformationMessage(`${selectedItem.id === 'none' ? 'No mode' : selectedItem.label.replace('$(check) ', '')} is already active.`);
+        return;
+      }
+
       if (selectedItem.id === 'none') {
         // Disable all modes
         disableAllModes();
       } else {
+        // Eğer başka bir mod zaten aktifse, kullanıcıya bilgi ver
+        if (activeMode) {
+          vscode.window.showInformationMessage(`Changing mode from ${activeMode.name} to ${selectedItem.label.replace('$(check) ', '')}.`);
+        } else {
+          vscode.window.showInformationMessage(`Activating ${selectedItem.label.replace('$(check) ', '')}.`);
+        }
+
         // Activate selected mode
         modeManager.activateMode(selectedItem.id);
 

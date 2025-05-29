@@ -10,6 +10,7 @@ export class ModeManager {
   private context: vscode.ExtensionContext;
   private modeCommands: Map<string, vscode.Disposable[]>;
   private registeredCommandIds: Set<string>;
+  private modeActivationLock: boolean = false;
 
   /**
    * Creates a new ModeManager
@@ -31,32 +32,81 @@ export class ModeManager {
   }
 
   /**
+   * Aktivasyon kilidi - mod aktivasyon sürecinin tek seferde yalnızca bir kez gerçekleşmesini sağlar
+   * @returns Kilit alınabildi mi
+   */
+  private acquireActivationLock(): boolean {
+    if (this.modeActivationLock) {
+      return false;
+    }
+    this.modeActivationLock = true;
+    return true;
+  }
+
+  /**
+   * Aktivasyon kilidini serbest bırakır
+   */
+  private releaseActivationLock(): void {
+    this.modeActivationLock = false;
+  }
+
+  /**
    * Activates a mode by ID
    * @param modeId The ID of the mode to activate
    * @returns true if activation was successful, false otherwise
    */
   public activateMode(modeId: string): boolean {
-    // Deactivate current mode if there is one
-    if (this.activeMode) {
-      this.deactivateCurrentMode();
-    }
-
-    const mode = this.modes.get(modeId);
-    if (!mode) {
+    // Eğer aktivasyon kilidi alınamazsa (başka bir aktivasyon süreci devam ediyorsa) işlemi durdur
+    if (!this.acquireActivationLock()) {
+      console.log('Mod aktivasyonu zaten devam ediyor, bu talep göz ardı edildi.');
       return false;
     }
 
-    // Register mode-specific commands based on the mode ID
-    this.registerModeCommands(modeId);
+    try {
+      // Eğer istenen mod zaten aktifse işlem yapmaya gerek yok
+      if (this.activeMode && this.activeMode.id === modeId) {
+        console.log(`${modeId} zaten aktif.`);
+        return true;
+      }
 
-    // Activate the mode
-    mode.activate(this.context);
-    this.activeMode = mode;
+      // Deactivate current mode if there is one
+      if (this.activeMode) {
+        console.log(`Deactivating current mode: ${this.activeMode.id}`);
+        this.deactivateCurrentMode();
+      }
 
-    // Save the active mode to global state
-    this.context.globalState.update('code566.activeMode', modeId);
+      const mode = this.modes.get(modeId);
+      if (!mode) {
+        console.log(`Mod bulunamadı: ${modeId}`);
+        return false;
+      }
 
-    return true;
+      // Tüm diğer modların gizli olduğundan emin ol
+      this.modes.forEach(m => {
+        if (m !== mode && m.statusBarItem) {
+          m.statusBarItem.hide();
+        }
+      });
+
+      // Register mode-specific commands based on the mode ID
+      this.registerModeCommands(modeId);
+
+      // Activate the mode
+      console.log(`Activating mode: ${modeId}`);
+      mode.activate(this.context);
+      this.activeMode = mode;
+
+      // Save the active mode to global state
+      this.context.globalState.update('code566.activeMode', modeId);
+
+      return true;
+    } catch (error) {
+      console.error(`Mod aktivasyonu sırasında hata: ${error}`);
+      return false;
+    } finally {
+      // İşlem başarılı veya başarısız olsa da kilidi serbest bırak
+      this.releaseActivationLock();
+    }
   }
 
   /**
@@ -64,12 +114,21 @@ export class ModeManager {
    */
   private deactivateCurrentMode(): void {
     if (this.activeMode) {
-      // Dispose of mode-specific commands
-      this.disposeModeCommands(this.activeMode.id);
+      try {
+        // Dispose of mode-specific commands
+        this.disposeModeCommands(this.activeMode.id);
 
-      // Deactivate the mode
-      this.activeMode.deactivate();
-      this.activeMode = undefined;
+        // Deactivate the mode
+        this.activeMode.deactivate();
+
+        // Aktif mod referansını temizle
+        const oldModeId = this.activeMode.id;
+        this.activeMode = undefined;
+
+        console.log(`Mode deactivated: ${oldModeId}`);
+      } catch (error) {
+        console.error(`Mod deaktivasyonu sırasında hata: ${error}`);
+      }
     }
   }
 
@@ -179,23 +238,48 @@ export class ModeManager {
    * For cleanup when the extension is deactivated or all modes are disabled
    */
   public dispose(): void {
-    // Deactivate current mode if there is one
-    this.deactivateCurrentMode();
+    // Ensure activation lock is acquired to prevent race conditions
+    if (!this.acquireActivationLock()) {
+      console.log('Mod deaktivasyonu zaten devam ediyor, bekleyin...');
+      // Wait a bit and try again
+      setTimeout(() => this.dispose(), 100);
+      return;
+    }
 
-    // Dispose all remaining commands
-    this.modeCommands.forEach((commands) => {
-      commands.forEach(command => {
-        command.dispose();
+    try {
+      console.log('Cleaning up all modes and resources...');
+
+      // Deactivate current mode if there is one
+      if (this.activeMode) {
+        console.log(`Deactivating active mode: ${this.activeMode.id}`);
+        this.deactivateCurrentMode();
+      }
+
+      // Dispose all remaining commands
+      this.modeCommands.forEach((commands, modeId) => {
+        console.log(`Disposing commands for mode: ${modeId}`);
+        commands.forEach(command => {
+          command.dispose();
+        });
       });
-    });
-    this.modeCommands.clear();
+      this.modeCommands.clear();
 
-    // Clear active mode reference
-    this.activeMode = undefined;
+      // Clear active mode reference
+      this.activeMode = undefined;
 
-    // Tüm modların status bar öğelerini gizle
-    this.modes.forEach(mode => {
-      mode.statusBarItem.hide();
-    });
+      // Tüm modların status bar öğelerini gizle
+      this.modes.forEach(mode => {
+        if (mode.statusBarItem) {
+          console.log(`Hiding status bar for mode: ${mode.id}`);
+          mode.statusBarItem.hide();
+        }
+      });
+
+      console.log('All modes and resources cleaned up successfully.');
+    } catch (error) {
+      console.error(`Mod temizliği sırasında hata: ${error}`);
+    } finally {
+      this.releaseActivationLock();
+    }
   }
 }
