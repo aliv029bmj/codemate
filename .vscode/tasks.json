@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Kurulum ve Derleme",
+      "detail": "Tüm bağımlılıkları kurar ve projeyi derler",
+      "type": "shell",
+      "command": "npm install && npm run compile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "VSIX Paketi Oluştur",
+      "detail": "Eklentiyi paketleyip VS Code'da kullanılabilir hale getirir",
+      "type": "shell",
+      "command": "vsce package",
+      "dependsOn": "Kurulum ve Derleme",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Geliştirme İzleme",
+      "detail": "Kodda değişiklik olduğunda otomatik derleme yapar",
+      "type": "shell",
+      "command": "npm run watch",
+      "group": "build",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": "$tsc-watch"
+    },
+    {
+      "label": "Eklentiyi Test Et",
+      "detail": "Eklentiyi yeni VS Code penceresinde test eder",
+      "type": "shell",
+      "command": "code --extensionDevelopmentPath=${workspaceFolder} ${workspaceFolder}/README.md",
+      "dependsOn": "Kurulum ve Derleme",
+      "group": "test",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Komple Kurulum ve Paketleme",
+      "detail": "Tek komutla kurulum, derleme ve paketleme yapar",
+      "dependsOrder": "sequence",
+      "dependsOn": ["Kurulum ve Derleme", "VSIX Paketi Oluştur"],
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+} 
