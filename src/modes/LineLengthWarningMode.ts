@@ -152,10 +152,15 @@ export class LineLengthWarningMode extends BaseMode {
   private updateStatusBar(line: number, column: number): void {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-      this.statusBarItem.text = '$(alert) Line Length: No editor';
-      this.detailStatusBar.text = '';
+      // Editor yoksa status bar öğelerini gizle
+      this.statusBarItem.hide();
+      this.detailStatusBar.hide();
       return;
     }
+
+    // Editor varsa göster
+    this.statusBarItem.show();
+    this.detailStatusBar.show();
 
     // Get current line and its length
     const currentLine = editor.document.lineAt(line);

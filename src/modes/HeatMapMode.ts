@@ -137,9 +137,13 @@ export class HeatMapMode extends BaseMode {
   private updateStatusBar(line: number, column: number): void {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-      this.statusBarItem.text = '$(flame) Heat Map: No editor';
+      // Editor yoksa status bar öğesini gizle
+      this.statusBarItem.hide();
       return;
     }
+
+    // Editor varsa göster
+    this.statusBarItem.show();
 
     // Get edit count for current line
     const editCount = this.editMap.get(line) || 0;

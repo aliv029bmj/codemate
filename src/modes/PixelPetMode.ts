@@ -129,6 +129,16 @@ export class PixelPetMode extends BaseMode {
    * Updates the status bar with the pet's current state
    */
   private updateStatusBar(): void {
+    // Editor kontrolü ekle
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      this.statusBarItem.hide();
+      return;
+    }
+
+    // Editor varsa göster
+    this.statusBarItem.show();
+
     let petEmoji;
 
     // Choose emoji based on mood

@@ -176,10 +176,15 @@ export class LineColumnRecordsMode extends BaseMode {
   private updateStatusBar(line: number, column: number): void {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-      this.statusBarItem.text = '$(trophy) Records: No editor';
-      this.statusBarDetail.text = '';
+      // Editor yoksa status bar öğelerini gizle
+      this.statusBarItem.hide();
+      this.statusBarDetail.hide();
       return;
     }
+
+    // Editor varsa göster
+    this.statusBarItem.show();
+    this.statusBarDetail.show();
 
     // Show current position in status bar
     this.statusBarItem.text = `$(trophy) Ln ${line + 1}, Col ${column + 1}`;
