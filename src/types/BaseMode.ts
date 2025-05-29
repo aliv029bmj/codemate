@@ -8,16 +8,19 @@ export abstract class BaseMode implements IMode {
   public readonly name: string;
   public readonly id: string;
   public statusBarItem!: vscode.StatusBarItem;
+  public description?: string;
 
   /**
    * Constructor for BaseMode
    * @param name Display name for the mode
    * @param id Unique identifier for the mode
    * @param priority Status bar priority (higher value = further right)
+   * @param description Optional description of the mode
    */
-  constructor(name: string, id: string, priority: number) {
+  constructor(name: string, id: string, priority: number, description?: string) {
     this.name = name;
     this.id = id;
+    this.description = description;
     this.createStatusBarItem(priority);
   }
 
@@ -26,7 +29,7 @@ export abstract class BaseMode implements IMode {
    * @param context Extension context
    */
   public activate(context: vscode.ExtensionContext): void {
-    // Show the status bar item
+    // Show the status bar item when mode is activated
     this.statusBarItem.show();
   }
 
@@ -34,7 +37,7 @@ export abstract class BaseMode implements IMode {
    * Deactivates the mode
    */
   public deactivate(): void {
-    // Hide the status bar item
+    // Hide the status bar item when mode is deactivated
     this.statusBarItem.hide();
   }
 
@@ -54,6 +57,8 @@ export abstract class BaseMode implements IMode {
     this.statusBarItem.text = this.name;
     this.statusBarItem.tooltip = `${this.name} - Click to change mode`;
     this.statusBarItem.command = 'code566.selectMode';
-    this.statusBarItem.show();
+
+    // Don't show the status bar item by default
+    // It will only be shown when the mode is activated
   }
 }

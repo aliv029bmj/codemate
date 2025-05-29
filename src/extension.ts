@@ -102,8 +102,8 @@ function registerCommands(context: vscode.ExtensionContext) {
         // Activate selected mode
         modeManager.activateMode(selectedItem.id);
 
-        // Update status bar text to show active mode
-        updateStatusBarText(selectedItem.label);
+        // Hide the main status bar item since the mode will show its own
+        modeStatusBarItem.hide();
       }
     }
   });
@@ -127,23 +127,11 @@ function disableAllModes() {
   // Update global state to indicate no active mode
   extensionContext.globalState.update('code566.activeMode', null);
 
-  // Reset status bar text
-  updateStatusBarText();
+  // Show the main status bar item again
+  modeStatusBarItem.show();
 
   // Show confirmation message
   vscode.window.showInformationMessage('All Code566 modes have been disabled.');
-}
-
-/**
- * Updates the status bar text based on the active mode
- * @param modeName Optional name of the active mode
- */
-function updateStatusBarText(modeName?: string) {
-  if (modeName) {
-    modeStatusBarItem.text = `$(check) Code566: ${modeName}`;
-  } else {
-    modeStatusBarItem.text = '$(gear) Code566';
-  }
 }
 
 /**
